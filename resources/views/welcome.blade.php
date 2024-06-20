@@ -22,13 +22,31 @@
     <div class="row row-cards">
       <div class="col-lg-12">
         <div class="card">
-          <div class="card-body">
-            <h3 class="card-title">Progress Peminjam</h3>
+          <div class="card-header">
+            <h3 class="card-title">Progress Data Peminjam</h3>
           </div>
           <div class="card-body">
-            <ul class="steps steps-green steps-counter my-4">
-              {!! $progress !!}
-            </ul>
+            <div class="row">
+              <div class="col">
+                {!! $progress !!}
+              </div>
+            </div>
+            @if ($borrowerStatus->is_active == '1')
+            <div class="row g-2 align-items-center">
+              @if ($loanActiveCount != "" && $loanPaidCount != "" && ($loanActiveCount < 1 || $loanPaidCount > 0))
+              <div class="col-6 col-sm-4 col-md-2 col-xl py-3">
+                <a href="{{ url('/borrower/loan/create/'.encrypt(auth()->user()->id)) }}" class="btn btn-primary w-100">
+                    Pengajuan Pinjaman
+                </a>
+              </div>
+              @endif
+              <div class="col-6 col-sm-4 col-md-2 col-xl py-3">
+                <a href="{{ url('/borrower/loan/history/'.encrypt(auth()->user()->id)) }}" class="btn btn-primary w-100">
+                  History Pinjaman Anda
+                </a>
+              </div>
+            </div>
+            @endif
           </div>
         </div>
       </div>

@@ -12,7 +12,7 @@ use function Ramsey\Uuid\v1;
 class UserController extends Controller
 {
     public function indexInternal(){
-        $datas = User::where('role','<>','Investor')
+        $datas = User::where('role','<>','Lender')
         ->where('role','<>','Borrower')
         ->orderBy('name', 'asc')->get();
 
@@ -38,6 +38,9 @@ class UserController extends Controller
             elseif($borrower->is_active == '1'){
                 $progress = "Siap Pengajuan";
             }
+            elseif($borrower->is_active == '2'){
+                $progress = "Ditolak";
+            }
             else{
                 $progress = "";
             }
@@ -60,6 +63,26 @@ class UserController extends Controller
             DB::rollback();
             return redirect()->back()->with(['fail' => 'Failed Update Status']);
         }
+    }
+
+    public function notEligibleBorrower($id){
+        DB::beginTransaction();
+        try {
+            $store = Borrower::where('id',decrypt($id))
+            ->update([
+                'is_active' => '2',
+            ]);
+
+            DB::commit();
+            return redirect()->back()->with(['success' => 'Success Update Status']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect()->back()->with(['fail' => 'Failed Update Status']);
+        }
+    }
+
+    public function showBorrowerLoanList($id){
+        dd(decrypt($id));
     }
 
     public function store(Request $request){

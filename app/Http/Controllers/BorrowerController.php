@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Borrower;
 use App\Models\Loan;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -12,22 +13,35 @@ use function Ramsey\Uuid\v1;
 
 class BorrowerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
     public function indexRegist()
     {
         return view('borrowers.registration');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    public function historyLoan($id){
+        //dd(decrypt($id));
+        $borrower_id = Borrower::where('user_id',decrypt($id))->first();
+
+        $loanCount = Loan::where('borrower_id',$borrower_id->id)->count();
+
+        if($loanCount > 0){
+            $loan = Loan::where('borrower_id',$borrower_id->id)->where('is_active','0')->orderBy('id','desc')->first();
+            $status = $loan->status;
+            $datas = Loan::select(
+                'loans.*',
+                'borrowers.*',
+                'loans.id as id_loan'
+                )
+                ->where('borrower_id',$borrower_id->id)
+                ->leftJoin('borrowers','loans.borrower_id','borrowers.id')
+                ->get();
+        }else{
+            $status = "";
+            $datas = [];
+        }
+        return view('borrowers.history_loan',compact('status','datas'));
+    }
+    
     public function createLoan($id)
     {
         //dd('hai');
@@ -35,9 +49,6 @@ class BorrowerController extends Controller
         return view('borrowers.create_loan',compact('borrower'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         //dd($request->all());
@@ -119,7 +130,37 @@ class BorrowerController extends Controller
     }
 
     public function confirmLoan($id){
-        dd(decrypt($id));
+        //dd(decrypt($id));
+        $borrower = Loan::select(
+            'borrowers.*',
+            'loans.*',
+            'loans.id as loan_id',
+            'loans.created_at as tgl_pinjam'
+        )
+            ->leftJoin('borrowers','loans.borrower_id','borrowers.id')
+            ->where('loans.id',decrypt($id))
+            ->first();
+        return view('borrowers.confirm_loan',compact('borrower'));
+    }
+
+    public function confirmSubmitLoan($id){
+        DB::beginTransaction();
+        try {
+            $currentDate = Carbon::now()->format('Ymd');
+            Loan::where('id',decrypt($id))->update([
+                'loan_no' => 'PJM/'.$currentDate. "/" .decrypt($id),
+                'status' => 'approval'
+            ]);
+
+            DB::commit();
+            session()->flash('status', 'Sukses Pengajuan Pinjaman, Silahkan Tunggu Moderasi Admin');
+            return redirect('/');
+        } catch (\Throwable $th) {
+            dd($th);
+            DB::rollback();
+            session()->flash('status', 'Gagal Pengajuan Pinjaman');
+            return redirect('/');
+        }
     }
 
     public function viewProfile($id){
@@ -127,25 +168,6 @@ class BorrowerController extends Controller
         return view('borrowers.profile',compact('borrower'));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Borrower $borrower)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Borrower $borrower)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
         //dd(decrypt($id));
@@ -213,11 +235,39 @@ class BorrowerController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Borrower $borrower)
-    {
-        //
+    public function approvedLoan($id){
+        DB::beginTransaction();
+        try {
+            Loan::where('id',decrypt($id))->update([
+                'status' => 'approved'
+            ]);
+
+            DB::commit();
+            session()->flash('status', 'Sukses Approved Pinjaman');
+            return redirect()->back();
+        } catch (\Throwable $th) {
+            dd($th);
+            DB::rollback();
+            session()->flash('status', 'Gagal Approved Pinjaman');
+            return redirect()->back();
+        }       
+    }
+
+    public function rejectedLoan($id){
+        DB::beginTransaction();
+        try {
+            Loan::where('id',decrypt($id))->update([
+                'status' => 'rejected'
+            ]);
+
+            DB::commit();
+            session()->flash('status', 'Sukses Rejected Pinjaman');
+            return redirect()->back();
+        } catch (\Throwable $th) {
+            dd($th);
+            DB::rollback();
+            session()->flash('status', 'Gagal Rejected Pinjaman');
+            return redirect()->back();
+        }       
     }
 }

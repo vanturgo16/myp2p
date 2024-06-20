@@ -22,6 +22,7 @@ Route::patch('/users/internal/active/{id}', [UserController::class, 'active']);
 Route::get('/users/borrower', [UserController::class, 'indexBorrower']);
 Route::get('/users/borrower/{id}', [UserController::class, 'showBorrower']);
 Route::patch('/users/borrower/eligible/{id}', [UserController::class, 'eligibleBorrower']);
+Route::get('/users/borrower/not-eligible/{id}', [UserController::class, 'notEligibleBorrower']);
 
 //Borrower
 Route::get('/borrower/regist', [BorrowerController::class, 'indexRegist']);
@@ -32,4 +33,8 @@ Route::get('/borrower/profile/{id}', [BorrowerController::class, 'viewProfile'])
 Route::get('/borrower/loan/create/{id}', [BorrowerController::class, 'createLoan']);
 Route::post('/borrower/loan/store', [BorrowerController::class, 'storeLoan']);
 Route::get('/borrower/loan/confirm/{id}', [BorrowerController::class, 'confirmLoan']);
+Route::post('/borrower/loan/confirm-submit/{id}', [BorrowerController::class, 'confirmSubmitLoan']);
+Route::get('/borrower/loan/history/{id}', [BorrowerController::class, 'historyLoan']);
+Route::patch('/borrower/loan/approved/{id}', [BorrowerController::class, 'approvedLoan']);
+Route::patch('/borrower/loan/rejected/{id}', [BorrowerController::class, 'rejectedLoan']);
 

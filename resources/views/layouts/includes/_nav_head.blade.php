@@ -4,7 +4,7 @@
     </button>
     <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
       <a href="{{ url('/') }}">
-        <img src="{{ asset('/static/logofinmas.jpg') }}" width="110" height="32" alt="Tabler" class="navbar-brand-image">
+        {{-- <img src="{{ asset('/static/logofinmas.jpg') }}" width="110" height="32" alt="Tabler" class="navbar-brand-image"> --}}
       </a>
     </h1>
     @if(auth()->check())
@@ -104,7 +104,7 @@
             </a>
             <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
               <a href="#" class="dropdown-item">
-                @if(auth()->user()->role != 'Borrower' && auth()->user()->role != 'Investor')
+                @if(auth()->user()->role != 'Borrower' && auth()->user()->role != 'Lender')
                   @if (auth()->user()->is_active == '0')
                     <span class="badge bg-red text-red-fg">Tidak Aktif</span>
                   @else

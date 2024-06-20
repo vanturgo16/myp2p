@@ -45,7 +45,7 @@
                             Borrower
                           </a>
                           <a href="./card-actions.html" class="dropdown-item">
-                            Investor
+                            Lender
                           </a>
                           <a href="{{ url('users/internal') }}" class="dropdown-item">
                             Internal
@@ -77,7 +77,7 @@
                     Profil Data
                   </span>
                 </a>
-              </li>
+              {{-- </li>
               <li class="nav-item">
                 <a class="nav-link" href="{{ url('/borrower/loan/create/'.encrypt(auth()->user()->id)) }}" >
                   <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/checkbox -->
@@ -97,7 +97,7 @@
                     History Pengajuan Pinjaman
                   </span>
                 </a>
-              </li>
+              </li> --}}
             @endif
           @else
             <li class="nav-item">

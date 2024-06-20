@@ -109,7 +109,8 @@
                                 <h4 class="card-title">Data Bank</h4>
                                 @if ($progress == 'Proses KYC')
                                 <div class="card-actions">
-                                    <button type="submit" class="btn btn-primary ms-auto" onclick="return confirm('Are You Sure Eligible This Borrower?')">Update Status</button>
+                                    <button type="submit" class="btn btn-primary btn-sm ms-auto" onclick="return confirm('Are You Sure Approved This Borrower?')">Approved</button>
+                                    <a href="{{ url('/users/borrower/not-eligible',encrypt($borrower->id)) }}" class="btn btn-danger btn-sm ms-auto" onclick="return confirm('Are You Sure Rejected This Borrower?')">Rejected</a>
                                 </div>
                                 @endif
                             </div>
