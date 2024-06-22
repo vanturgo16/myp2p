@@ -93,8 +93,9 @@
                             <th><button class="table-sort" data-sort="sort-city">Admin</button></th>
                             <th><button class="table-sort" data-sort="sort-type">Pencairan</button></th>
                             <th><button class="table-sort" data-sort="sort-type">Pengembalian</button></th>
+                            <th><button class="table-sort" data-sort="sort-type">Tenor</button></th>
+                            <th><button class="table-sort" data-sort="sort-type">Tanggal Pengajuan</button></th>
                             <th><button class="table-sort" data-sort="sort-type">Tanggal Pencairan</button></th>
-                            <th><button class="table-sort" data-sort="sort-type">Tanggal Jatuh Tempo</button></th>
                             @if (auth()->user()->role == 'Admin')
                             <th><button class="table-sort" data-sort="sort-type">Aksi</button></th>
                             @endif
@@ -104,32 +105,20 @@
                             @foreach ($datas as $data)
                             <tr>
                                 <td><span class="badge bg-blue text-blue-fg">{{ $data->status }}</span></td>
-                                <td>
-                                    {{ $data->loan_no }}
-                                </td> 
+                                <td>{{ $data->loan_no }}</td> 
                                 <td>{{ number_format($data->loan_amount,2,",",".") }}</td>
-                                <td>{{ number_format($data->loan_amount*($data->interest_rate/100),2,",",".") }}</td>
-                                <td>{{ number_format($data->loan_amount*0.01,2,",",".") }}</td>
-                                <td>{{ number_format($data->loan_amount-(($data->loan_amount*($data->interest_rate/100))+($data->loan_amount*0.01)),2,",",".") }}</td>
-                                <td>{{ number_format($data->loan_amount + ($data->loan_amount*($data->interest_rate/100)),2,",",".") }}</td>
-                                <td>{{ $data->disburst_date }}</td>
+                                <td>{{ number_format($data->lender_amount,2,",",".") }}</td>
+                                <td>{{ number_format($data->platform_amount,2,",",".") }}</td>
+                                <td>{{ number_format($data->disburst_amount,2,",",".") }}</td>
+                                <td>{{ number_format($data->total_pay,2,",",".") }}</td>
+                                <td>{{ $data->duration_months . " Bulan" }}</td>
+                                <td>{{ $data->created_at }}</td>
                                 <td>
-                                    @php
-                                        if($data->disburst_date != ""){
-                                            $date = $data->disburst_date;
-                                            // Buat objek Carbon dari tanggal created_at
-                                            $date = \Carbon\Carbon::parse($date);
-
-                                            // Tambahkan satu bulan
-                                            $new_date = $date->addMonth()->format('Y-m-d');
-                                        }
-                                        else{
-                                            $new_date = "";
-                                        }
-                                        
-                                    @endphp
-
-                                    {{ $new_date }}
+                                    @if ($data->status == 'approved')
+                                        <i class="text-info">Proses Pendanaan</i>
+                                    @else
+                                        {{ $data->disburst_date }}
+                                    @endif
                                 </td>
                                 @if (auth()->user()->role == 'Admin')
                                 <td>

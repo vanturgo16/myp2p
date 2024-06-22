@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Borrower;
 use App\Models\Loan;
+use App\Models\LoanProduct;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -46,7 +47,8 @@ class BorrowerController extends Controller
     {
         //dd('hai');
         $borrower = Borrower::where('user_id',decrypt($id))->first();
-        return view('borrowers.create_loan',compact('borrower'));
+        $loanProducts = LoanProduct::orderBy('product_name','asc')->orderBy('tenor','asc')->get();
+        return view('borrowers.create_loan',compact('borrower','loanProducts'));
     }
 
     public function store(Request $request)
@@ -80,6 +82,7 @@ class BorrowerController extends Controller
                 'borrower_occupation' =>  $request->borrower_occupation, 
                 'borrower_source_income' =>  $request->borrower_source_income, 
                 'borrower_income' =>  $request->borrower_income, 
+                'borrower_id_card_no' =>  $request->borrower_id_card_no,
                 'borrower_id_card' =>  $url->getPath()."/".$filename,
                 'is_active' => '0'
             ]);
@@ -107,12 +110,15 @@ class BorrowerController extends Controller
         else{
             DB::beginTransaction();
             try {
+                $detailProduct = LoanProduct::where('id',$request->loan_product)->first();
+                $interest = $detailProduct->platform+$detailProduct->lender;
                 $storeLoan = Loan::create([
                     'borrower_id' => $request->borrower_id,
+                    'loan_product_id' => $request->loan_product,
                     'loan_amount' => $loan_amount,
                     'loan_purpose' => $request->loan_purpose,
-                    'interest_rate' => '2',
-                    'duration_months' => '1',
+                    'interest_rate' => $interest,
+                    'duration_months' => $detailProduct->tenor,
                     'status' => 'pending',
                     'is_active' => '0'
                 ]);
@@ -140,16 +146,86 @@ class BorrowerController extends Controller
             ->leftJoin('borrowers','loans.borrower_id','borrowers.id')
             ->where('loans.id',decrypt($id))
             ->first();
-        return view('borrowers.confirm_loan',compact('borrower'));
+        
+        $detailProduct = LoanProduct::where('id',$borrower->loan_product_id)->first();
+        $tenor = $detailProduct->tenor;
+        $tenor_type = $detailProduct->tenor_type;
+        
+        if ($detailProduct->type == 'advance') {
+            # code...
+            $amount = $borrower->loan_amount;
+            $days = $detailProduct->tenor * 30;
+            $admin_fee = (($detailProduct->platform * $days) * $amount)/100;
+            $lender = (($detailProduct->lender * $days) * $amount)/100;
+            $totalPay = $amount;
+            $disburst_amount = $amount - ($admin_fee + $lender);
+            $installment = $amount/$detailProduct->tenor;
+        }
+        else{
+            $amount = $borrower->loan_amount;
+            $days = $detailProduct->tenor * 30;
+            $admin_fee = (($detailProduct->platform * $days) * $amount)/100;
+            $lender = (($detailProduct->lender * $days) * $amount)/100;
+            $totalPay = $amount + ($admin_fee + $lender);
+            $disburst_amount = $amount;
+            $installment = $totalPay/$detailProduct->tenor;
+        }
+
+        return view('borrowers.confirm_loan',compact(
+            'borrower',
+            'amount',
+            'days',
+            'admin_fee',
+            'lender',
+            'totalPay',
+            'disburst_amount',
+            'installment',
+            'tenor',
+            'tenor_type'
+        ));
     }
 
     public function confirmSubmitLoan($id){
         DB::beginTransaction();
         try {
+            //cari loan
+            $loan = Loan::where('id',decrypt($id))->first();
+            //logic product
+            $detailProduct = LoanProduct::where('id',$loan->loan_product_id)->first();
+            if ($detailProduct->type == 'advance') {
+                # code...
+                $amount = $loan->loan_amount;
+                $days = $detailProduct->tenor * 30;
+                $totalPlatform = $detailProduct->platform * $days;
+                $admin_fee = (($detailProduct->platform * $days) * $amount)/100;
+                $totalLender = $detailProduct->lender * $days;
+                $lender = (($detailProduct->lender * $days) * $amount)/100;
+                $totalPay = $amount;
+                $disburst_amount = $amount - ($admin_fee + $lender);
+                $installment = $amount/$detailProduct->tenor;
+            }
+            else{
+                $amount = $loan->loan_amount;
+                $days = $detailProduct->tenor * 30;
+                $totalPlatform = $detailProduct->platform * $days;
+                $admin_fee = (($detailProduct->platform * $days) * $amount)/100;
+                $totalLender = $detailProduct->lender * $days;
+                $lender = (($detailProduct->lender * $days) * $amount)/100;
+                $totalPay = $amount + ($admin_fee + $lender);
+                $disburst_amount = $amount;
+                $installment = $totalPay/$detailProduct->tenor;
+            }
+
             $currentDate = Carbon::now()->format('Ymd');
             Loan::where('id',decrypt($id))->update([
                 'loan_no' => 'PJM/'.$currentDate. "/" .decrypt($id),
-                'status' => 'approval'
+                'platform' => $totalPlatform,
+                'platform_amount' => $admin_fee,
+                'lender' => $totalLender,
+                'lender_amount' => $lender,
+                'status' => 'approval',
+                'disburst_amount' => $disburst_amount,
+                'total_pay' => $totalPay
             ]);
 
             DB::commit();
@@ -182,6 +258,7 @@ class BorrowerController extends Controller
                 'borrower_occupation' =>  $request->borrower_occupation, 
                 'borrower_source_income' =>  $request->borrower_source_income, 
                 'borrower_income' =>  $request->borrower_income,
+                'borrower_id_card_no' =>  $request->borrower_id_card_no,
                 'is_active' => '0'
             ]);
 

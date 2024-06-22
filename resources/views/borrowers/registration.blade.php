@@ -91,7 +91,11 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label required">Jumlah Penghasilan per Bulan</label>
-                                                <input type="text" class="form-control" name="borrower_income" placeholder="Input penghasilan" name="borrower_income" required>
+                                                <input type="text" class="form-control" name="borrower_income" placeholder="Input penghasilan" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label required">Nomor KTP</label>
+                                                <input type="text" class="form-control" name="borrower_id_card_no" minlength="16" maxlength="16" placeholder="Input no KTP" required>
                                             </div>
                                             <div class="mb-3">
                                                 <div class="form-label required">Upload KTP</div>

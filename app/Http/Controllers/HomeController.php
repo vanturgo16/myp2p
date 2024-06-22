@@ -19,21 +19,21 @@ class HomeController extends Controller
             //dd($loanActiveCount,$loanPaidCount);
             if($borrowerStatus->is_active == '0' && $borrowerStatus->borrower_accountno == ''){
                 $progress = "<ul class='steps steps-green steps-counter my-4'>
-                            <li class='step-item active'>Data Lengkap</li> 
+                            <li class='step-item active'>Lengkapi Data Bank</li> 
                             <li class='step-item'>Proses KYC</li>
                             <li class='step-item'>Siap Pengajuan</li>
                             </ul>";
             }
             elseif($borrowerStatus->is_active == '0' && $borrowerStatus->borrower_accountno != ''){
                 $progress = "<ul class='steps steps-green steps-counter my-4'>
-                            <li class='step-item'>Data Lengkap</li> 
+                            <li class='step-item'>Lengkapi Data Bank</li> 
                             <li class='step-item active'>Proses KYC</li>
                             <li class='step-item'>Siap Pengajuan</li>
                             </ul>";
             }
             elseif($borrowerStatus->is_active == '1'){
                 $progress = "<ul class='steps steps-green steps-counter my-4'>
-                            <li class='step-item'>Data Lengkap</li> 
+                            <li class='step-item'>Lengkapi Data Bank</li> 
                             <li class='step-item'>Proses KYC</li>
                             <li class='step-item active'>Siap Pengajuan</li>
                             </ul>";

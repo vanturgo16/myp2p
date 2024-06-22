@@ -161,6 +161,7 @@
             </div>
         </div>
     </div>
+    @if(auth()->check() != '1')
     <div class="row row-cards mt-2">
         <div class="col-md-12 d-flex justify-content-center">
             <div class="row row-cards justify-content-center">
@@ -201,6 +202,7 @@
             </div>
         </div>
     </div>
+    @endif
 </div>
 </div>
 @endsection

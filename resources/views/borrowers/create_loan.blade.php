@@ -35,20 +35,35 @@
                             </div>
                             <div class="card-body">
                                 <div class="row g-5">
-                                    <div class="col-xl-6">
+                                    
+                                    <div class="col-xl-4">
+                                        <div class="row">
+                                            <div class="col-md-6 col-xl-12">
+                                                <div class="mb-3">
+                                                    <select class="form-select" name="loan_product" id="loan_product" required>
+                                                        <option value="">-- Pilih Produk Pinjaman --</option>
+                                                        @foreach ($loanProducts as $loanProduct)
+                                                        <option value="{{ $loanProduct->id }}">{{ $loanProduct->product_name. " - Tenor ". $loanProduct->tenor . " Bulan" }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>     
+                                    </div>
+                                    <div class="col-xl-4">
                                         <div class="row">
                                             <div class="col-md-6 col-xl-12">
                                                 <div class="mb-3">
                                                     <div>
                                                         <input type="hidden" name="borrower_id" value="{{ $borrower->id }}">
                                                         <input type="text" class="form-control" name="loan_amount" id="amount" placeholder="Input nominal pinjaman" required>
-                                                      <small class="form-hint"><b>Limit Aktif: {{ $borrower->loan_limit }}</b></small>
+                                                      <small class="form-hint"><b>Limit Aktif: {{ number_format($borrower->loan_limit,2,",",".") }}</b></small>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>     
                                     </div>
-                                    <div class="col-xl-6">
+                                    <div class="col-xl-4">
                                         <div class="row">
                                             <div class="col-md-6 col-xl-12">
                                                 <div class="mb-3">
@@ -60,6 +75,18 @@
                                                       <option value="Rumah Sakit">Rumah Sakit</option>
                                                     </select>
                                                 </div>
+                                            </div>
+                                        </div>     
+                                    </div>
+                                </div>
+                                <div class="row g-5" id="loan_product_details" style="display: none;">
+                                    <div class="col-xl-4">
+                                        <div class="row">
+                                            <div class="col-md-6 col-xl-12">
+                                                <div class="form-control-plaintext" id="loan_product_name"></div>
+                                                <div class="form-control-plaintext" id="loan_product_service_fee"></div>
+                                                <div class="form-control-plaintext" id="loan_product_interest"></div>
+                                                <div class="form-control-plaintext" id="loan_product_tenor"></div>
                                             </div>
                                         </div>     
                                     </div>
@@ -100,7 +127,39 @@
                     rupiah = split[1] != undefined ? rupiah + '.' + split[1] : rupiah;
                     return prefix == undefined ? rupiah : (rupiah ? '' + rupiah : '');
                 }
-                
+            
+            $('#loan_product').change(function() {
+                var productID = $(this).val();
+                var url = '{{ route("getProduct", ":id") }}';
+                url = url.replace(':id', productID);
+                if(productID) {
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function(data) {
+                            // Menampilkan detail produk pinjaman di elemen label
+                            var interest = (parseFloat(data.platform) + parseFloat(data.lender)).toFixed(3);
+                            $('#loan_product_name').text('Nama Produk: ' + data.product_name);
+                            $('#loan_product_service_fee').text('Biaya Layanan: ' + data.platform + '% /days');
+                            $('#loan_product_interest').text('Bunga: ' + data.lender + '% /days');
+                            $('#loan_product_tenor').text('Tenor: ' + data.tenor + ' ' + data.tenor_type);
+
+                            // Tampilkan div dengan detail produk
+                            $('#loan_product_details').show();
+                        }
+                    });
+                } else {
+                    // Menangani error jika produk tidak ditemukan
+                    $('#loan_product_name').text('Produk tidak ditemukan.');
+                    $('#loan_product_service_fee').text('');
+                    $('#loan_product_interest').text('');
+                    $('#loan_product_tenor').text('');
+
+                    // sembunyikan  div dengan detail produk
+                    $('#loan_product_details').hide();
+                }
+            });      
         });
     </script>
 @endsection

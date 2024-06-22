@@ -63,7 +63,11 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label required">Jumlah Penghasilan per Bulan</label>
-                                                    {{ $borrower->borrower_income }}
+                                                    {{ number_format($borrower->borrower_income,2,",",".") }}
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label required">Nomor KTP</label>
+                                                    {{ $borrower->borrower_id_card_no }}
                                                 </div>
                                                 <div class="mb-3">
                                                     <div class="form-label required">Upload KTP</div>
@@ -101,50 +105,91 @@
                     </div>
                 </div>
                 <div class="col-md-6">
+                    <form action="{{ url('/users/borrower/eligible',encrypt($borrower->id)) }}" method="POST" class="card" enctype="multipart/form-data">
+                    @csrf
+                    @method('PATCH')
                     <div class="card">
-                        <form action="{{ url('/users/borrower/eligible',encrypt($borrower->id)) }}" method="POST" class="card" enctype="multipart/form-data">
-                            @csrf
-                            @method('PATCH')
-                            <div class="card-header">
-                                <h4 class="card-title">Data Bank</h4>
-                                @if ($progress == 'Proses KYC')
-                                <div class="card-actions">
-                                    <button type="submit" class="btn btn-primary btn-sm ms-auto" onclick="return confirm('Are You Sure Approved This Borrower?')">Approved</button>
-                                    <a href="{{ url('/users/borrower/not-eligible',encrypt($borrower->id)) }}" class="btn btn-danger btn-sm ms-auto" onclick="return confirm('Are You Sure Rejected This Borrower?')">Rejected</a>
-                                </div>
-                                @endif
+                        <div class="card-header">
+                            <h4 class="card-title">Data Bank</h4>
+                            @if ($progress == 'Proses KYC')
+                            <div class="card-actions">
+                                <button type="submit" class="btn btn-primary btn-sm ms-auto" onclick="return confirm('Are You Sure Approved This Borrower?')">Approved</button>
+                                <a href="{{ url('/users/borrower/not-eligible',encrypt($borrower->id)) }}" class="btn btn-danger btn-sm ms-auto" onclick="return confirm('Are You Sure Rejected This Borrower?')">Rejected</a>
                             </div>
-                            <div class="card-body">
-                                <div class="row g-5">
-                                    <div class="col-xl-12">
-                                        <div class="row">
-                                            <div class="col-md-12 col-xl-12">
-                                                <div class="mb-3">
-                                                    <div class="form-label required">Nama Bank</div>
-                                                    {{ $borrower->borrower_bank_name }}
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label required">No Rekening</label>
-                                                    {{ $borrower->borrower_accountno }}
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label class="form-label required">Nama Tertera di Rekening</label>
-                                                    {{ $borrower->borrower_accountname }}
-                                                </div>
+                            @endif
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-5">
+                                <div class="col-xl-12">
+                                    <div class="row">
+                                        <div class="col-md-12 col-xl-12">
+                                            <div class="mb-3">
+                                                <div class="form-label required">Nama Bank</div>
+                                                {{ $borrower->borrower_bank_name }}
                                             </div>
-                                        </div>     
-                                    </div>
+                                            <div class="mb-3">
+                                                <label class="form-label required">No Rekening</label>
+                                                {{ $borrower->borrower_accountno }}
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label required">Nama Tertera di Rekening</label>
+                                                {{ $borrower->borrower_accountname }}
+                                            </div>
+                                        </div>
+                                    </div>     
                                 </div>
                             </div>
-                            {{-- <div class="card-footer text-end">
-                            <div class="d-flex">
-                                <button type="submit" class="btn btn-primary ms-auto">Submit data Profil</button>
-                            </div>
-                            </div> --}}
-                        </form>
+                        </div>
                     </div>
+                    <div class="card mt-2">
+                        <div class="card-body">
+                            <div class="row g-5">
+                                <div class="col-xl-12">
+                                    <div class="row">
+                                        <div class="col-md-12 col-xl-12">
+                                            <div class="mb-3">
+                                                <div class="form-label required">Plafon</div>
+                                                @if ($borrower->loan_limit == '0')
+                                                <input type="text" class="form-control" name="loan_limit" id="loan_limit" placeholder="Input plafon" required>
+                                                @else
+                                                {{ number_format($borrower->loan_limit,2,",",".") }}
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>     
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var charges = document.getElementById('loan_limit');
+            
+            charges.addEventListener('keyup',function(e){
+                charges.value = formatCurrency(this.value,' ');
+            });
+    
+            function formatCurrency(number,prefix)
+            {
+                var number_string = number.replace(/[^.\d]/g, '').toString(),
+                    split	= number_string.split('.'),
+                    sisa 	= split[0].length % 3,
+                    rupiah 	= split[0].substr(0, sisa),
+                    ribuan 	= split[0].substr(sisa).match(/\d{1,3}/gi);
+                    
+                if (ribuan) {
+                    separator = sisa ? ',' : '';
+                    rupiah += separator + ribuan.join(',');
+                }
+                
+                rupiah = split[1] != undefined ? rupiah + '.' + split[1] : rupiah;
+                return prefix == undefined ? rupiah : (rupiah ? '' + rupiah : '');
+            }   
+        });
+    </script>
 @endsection

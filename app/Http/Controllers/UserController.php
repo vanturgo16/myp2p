@@ -48,18 +48,20 @@ class UserController extends Controller
         return view('users.showBorrower',compact('borrower','progress'));
     }
     
-    public function eligibleBorrower($id){
+    public function eligibleBorrower(Request $request,$id){
+        $loan_limit = str_replace(",", "",$request->loan_limit);
         DB::beginTransaction();
         try {
             $store = Borrower::where('id',decrypt($id))
             ->update([
                 'is_active' => '1',
-                'loan_limit' => '10000000' //di hardcode dulu belum ada logic
+                'loan_limit' => $loan_limit
             ]);
 
             DB::commit();
             return redirect()->back()->with(['success' => 'Success Update Status']);
         } catch (\Throwable $th) {
+            dd($th);
             DB::rollback();
             return redirect()->back()->with(['fail' => 'Failed Update Status']);
         }

@@ -89,6 +89,10 @@
                                                     <input type="text" class="form-control" name="borrower_income" placeholder="Input penghasilan" name="borrower_income" value="{{ $borrower->borrower_income }}" required>
                                                 </div>
                                                 <div class="mb-3">
+                                                    <label class="form-label required">Nomor KTP</label>
+                                                    <input type="text" class="form-control" name="borrower_id_card_no" placeholder="Input no KTP" value="{{ $borrower->borrower_id_card_no }}" required>
+                                                </div>
+                                                <div class="mb-3">
                                                     <div class="form-label required">Upload KTP</div>
                                                     <input type="file" class="form-control" name="borrower_id_card">
                                                     <a href="#" class="btn mt-3" data-bs-toggle="modal" data-bs-target="#modal-large">

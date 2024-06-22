@@ -39,42 +39,13 @@
                                         <div class="row">
                                             <div class="col-md-6 col-xl-12">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Nilai Pinjaman: {{ number_format($borrower->loan_amount,2,",","."); }}</label>
-                                                    <label class="form-label">Biaya Admin: 
-                                                        @php 
-                                                        $loan_amount = $borrower->loan_amount;
-                                                        
-                                                       // $biaya = $loan_amount*0,01
-
-                                                        echo number_format($loan_amount*0.01,2,",",".");
-                                                        
-                                                        @endphp
-                                                    </label>
-                                                    <label class="form-label">Nilai Pencairan: 
-                                                        @php 
-                                                        $loan_amount = $borrower->loan_amount;
-                                                        
-                                                       // $biaya = $loan_amount*0,01
-                                                        echo number_format($loan_amount-($loan_amount*0.01),2,",",".");
-                                                        
-                                                        @endphp
-                                                    </label>
-                                                    <label class="form-label">Bunga: 
-                                                        @php 
-                                                        $loan_amount = $borrower->loan_amount;
-                                                        
-                                                        echo number_format($loan_amount*0.02,2,",",".");
-                                                        
-                                                        @endphp
-                                                    </label>
-                                                    <label class="form-label">Nilai Pengembalian: 
-                                                        @php 
-                                                        $loan_amount = $borrower->loan_amount;
-                                                        
-                                                        echo number_format($loan_amount+($loan_amount*0.02),2,",",".");
-                                                        
-                                                        @endphp
-                                                    </label>
+                                                    <label class="form-label">Nilai Pinjaman: {{ number_format($amount,2,",","."); }}</label>
+                                                    <label class="form-label">Biaya Admin: {{ number_format($admin_fee,2,",","."); }}</label>
+                                                    <label class="form-label">Bunga: {{ number_format($lender,2,",","."); }}</label>
+                                                    <label class="form-label">Nilai Pencairan: {{ number_format($disburst_amount,2,",","."); }}</label>
+                                                    <label class="form-label">Nilai Pengembalian: {{ number_format($totalPay,2,",","."); }}</label>
+                                                    <label class="form-label">Tenor: {{ $tenor." ".$tenor_type }}</label>
+                                                    <label class="form-label">Cicilan: {{ number_format($installment,2,",",".")."/".$tenor_type; }}</label>
                                                 </div>
                                             </div>
                                         </div>     
@@ -83,11 +54,11 @@
                                         <div class="row">
                                             <div class="col-md-6 col-xl-12">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Nilai Pinjaman: {{ $borrower->loan_purpose }}</label>
+                                                    <label class="form-label">Tujuan Pinjaman: {{ $borrower->loan_purpose }}</label>
                                                     <label class="form-label">Jatuh Tempo:
                                                         @php
                                                             use Carbon\Carbon;
-                                                            $duedate = Carbon::parse($borrower->tgl_pinjam)->addMonth();
+                                                            $duedate = Carbon::parse($borrower->tgl_pinjam)->addMonth($tenor)->format('Y-m-d');
 
                                                             echo $duedate
                                                         @endphp

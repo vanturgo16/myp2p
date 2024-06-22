@@ -12,7 +12,8 @@
 		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 		<meta http-equiv="X-UA-Compatible" content="ie=edge"/>
-		<title>P2P</title>
+		<title>SIAP P2P</title>
+    <link rel="shortcut icon" href="{{ asset('/static/Group 1.png') }}" />
 
 		<!-- CSS files -->
 		<link href="{{ asset('dist/css/tabler.min.css') }}" rel="stylesheet"/>
@@ -23,7 +24,7 @@
 		
 		<!--Data Tables-->
 		<link rel="stylesheet" type="text/css" href="{{ asset('dist/css/jquery.dataTables.min.css') }}">
-		<script src="{{ url('https://code.jquery.com/jquery-3.5.1.js') }}"></script>
+		<script src="{{ url('https://code.jquery.com/jquery-3.6.0.min.js') }}"></script>
 		<script src="{{ url('https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js') }}"></script>
 
 		<!--for Select2-->

@@ -23,6 +23,12 @@ class LoginController extends Controller
         ];
 
         $cekuser_status=User::where('email',$email)->first();
+        $cekuser_exist=User::where('email',$email)->count();
+
+        if ($cekuser_exist < 1) {
+            session()->flash('status', 'Wrong Email or Password');
+            return redirect('/');
+        }
 
         if($cekuser_status->is_active=='1'){
             $dologin=Auth::attempt($credentials);
