@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Borrower;
+use App\Models\Lender;
+use App\Models\LenderBalance;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -83,8 +85,78 @@ class UserController extends Controller
         }
     }
 
-    public function showBorrowerLoanList($id){
-        dd(decrypt($id));
+    public function indexLender(){
+        $datas = User::where('role','Lender')
+        ->select(
+            'users.*',
+            'lenders.is_active as status_lender'
+        )
+        ->leftJoin('lenders','users.id','lenders.user_id')
+        ->orderBy('name', 'asc')->get();
+    
+        return view('users.indexLender',compact('datas'));
+    }
+
+    public function showLender($id){
+        $lender = Lender::where('user_id',decrypt($id))->first();
+
+            if($lender->is_active == '0' && $lender->lender_accountno == ''){
+                $progress = "Data Lengkap";
+            }
+            elseif($lender->is_active == '0' && $lender->lender_accountno != ''){
+                $progress = "Proses KYC";
+            }
+            elseif($lender->is_active == '1'){
+                $progress = "Siap Mendanai Pinjaman";
+            }
+            elseif($lender->is_active == '2'){
+                $progress = "Ditolak";
+            }
+            else{
+                $progress = "";
+            }
+
+        return view('users.showLender',compact('lender','progress'));
+    }
+    
+    public function eligibleLender($id){
+        DB::beginTransaction();
+        try {
+            $updateStatus = Lender::where('id',decrypt($id))
+            ->update([
+                'is_active' => '1'
+            ]);
+            
+            $user_id = Lender::where('id',decrypt($id))->first()->user_id;
+            $storeBalance = LenderBalance::create([
+                'user_id' => $user_id,
+                'lender_id' => decrypt($id),
+                'balance' => '0'
+            ]);
+
+            DB::commit();
+            return redirect()->back()->with(['success' => 'Success Update Status']);
+        } catch (\Throwable $th) {
+            dd($th);
+            DB::rollback();
+            return redirect()->back()->with(['fail' => 'Failed Update Status']);
+        }
+    }
+
+    public function notEligibleLender($id){
+        DB::beginTransaction();
+        try {
+            $store = Lender::where('id',decrypt($id))
+            ->update([
+                'is_active' => '2',
+            ]);
+
+            DB::commit();
+            return redirect()->back()->with(['success' => 'Success Update Status']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect()->back()->with(['fail' => 'Failed Update Status']);
+        }
     }
 
     public function store(Request $request){

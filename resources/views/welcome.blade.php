@@ -19,38 +19,134 @@
     @endif
 
     @if(auth()->check() && auth()->user()->role == "Borrower")
-    <div class="row row-cards">
-      <div class="col-lg-12">
-        <div class="card">
-          <div class="card-header">
-            <h3 class="card-title">Progress Data Peminjam</h3>
-          </div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col">
-                {!! $progress !!}
-              </div>
+      <div class="row row-cards">
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Progress Data Peminjam</h3>
             </div>
-            @if ($borrowerStatus->is_active == '1')
-            <div class="row g-2 align-items-center">
-              @if ($loanActiveCount != "" && $loanPaidCount != "" && ($loanActiveCount < 1 || $loanPaidCount > 0))
-              <div class="col-6 col-sm-4 col-md-2 col-xl py-3">
-                <a href="{{ url('/borrower/loan/create/'.encrypt(auth()->user()->id)) }}" class="btn btn-primary w-100">
-                    Pengajuan Pinjaman
-                </a>
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  {!! $progress !!}
+                </div>
+              </div>
+              @if ($borrowerStatus->is_active == '1')
+              <div class="row g-2 align-items-center">
+                @if ($loanActiveCount != "" && $loanPaidCount != "" && ($loanActiveCount < 1 || $loanPaidCount > 0))
+                <div class="col-6 col-sm-4 col-md-2 col-xl py-3">
+                  <a href="{{ url('/borrower/loan/create/'.encrypt(auth()->user()->id)) }}" class="btn btn-primary w-100">
+                      Pengajuan Pinjaman
+                  </a>
+                </div>
+                @endif
+                <div class="col-6 col-sm-4 col-md-2 col-xl py-3">
+                  <a href="{{ url('/borrower/loan/history/'.encrypt(auth()->user()->id)) }}" class="btn btn-primary w-100">
+                    History Pinjaman Anda
+                  </a>
+                </div>
               </div>
               @endif
-              <div class="col-6 col-sm-4 col-md-2 col-xl py-3">
-                <a href="{{ url('/borrower/loan/history/'.encrypt(auth()->user()->id)) }}" class="btn btn-primary w-100">
-                  History Pinjaman Anda
-                </a>
-              </div>
             </div>
-            @endif
           </div>
         </div>
       </div>
-    </div>
+    @elseif(auth()->check() && auth()->user()->role == "Lender")
+      <div class="row row-cards">
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Progress Data Pemodal</h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  {!! $progress !!}
+                </div>
+              </div>
+              @if ($lenderStatus->is_active == '1')
+                <div class="row g-2 align-items-center">
+                  <div class="col-4 col-sm-4 col-md-2 col-xl py-3">
+                    <button type="submit" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#modal-cashin">Cash In Dana Siaga</button>
+                    <div class="modal modal-blur fade" id="modal-cashin" tabindex="-1" role="dialog" aria-hidden="true">
+                      <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                          <form action="{{ url('/lender/balance/cashin',encrypt(auth()->user()->id)) }}" class="card" method="POST" enctype="multipart/form-data">
+                              @csrf
+                              <div class="modal-body">
+                                  <div class="modal-title">Cash In Dana Siaga</div>
+                                  <div>
+                                      <div class="mb-3">
+                                          <select class="form-select" name="cashin_amount" required>
+                                          <option value="">- Pilih Nominal -</option>
+                                          <option value="500000">500.000</option>
+                                          <option value="1000000">1.000.000</option>
+                                          <option value="1500000">1.500.000</option>
+                                          <option value="2000000">2.000.000</option>
+                                          <option value="2500000">2.500.000</option>
+                                          <option value="3000000">3.000.000</option>
+                                          <option value="3500000">3.500.000</option>
+                                          <option value="4000000">4.000.000</option>
+                                          <option value="4500000">4.500.000</option>
+                                          <option value="5000000">5.000.000</option>
+                                          <option value="5500000">5.500.000</option>
+                                          <option value="6000000">6.000.000</option>
+                                          <option value="6500000">6.500.000</option>
+                                          <option value="7000000">7.000.000</option>
+                                          <option value="7500000">7.500.000</option>
+                                          <option value="8000000">8.000.000</option>
+                                          <option value="8500000">8.500.000</option>
+                                          <option value="9000000">9.000.000</option>
+                                          <option value="9500000">9.500.000</option>
+                                          <option value="10000000">10.000.000</option>
+                                          </select>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-link link-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
+                                  <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+                              </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-4 col-sm-4 col-md-2 col-xl py-3">
+                    <button type="submit" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#modal-cashout">Cash Out Dana Siaga</button>
+                    <div class="modal modal-blur fade" id="modal-cashout" tabindex="-1" role="dialog" aria-hidden="true">
+                      <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                          <form action="{{ url('/lender/balance/cashout',encrypt(auth()->user()->id)) }}" class="card" method="POST" enctype="multipart/form-data">
+                              @csrf
+                              <div class="modal-body">
+                                  <div class="modal-title">Cash Out Dana Siaga</div>
+                                  <div>
+                                      <div class="mb-3">
+                                        <input type="text" class="form-control" name="cashout_amount" id="cashout_amount" placeholder="Input nominal">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-link link-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
+                                  <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+                              </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-4 col-sm-4 col-md-2 col-xl py-3">
+                    <a href="{{ url('/lender/balance/history/'.encrypt(auth()->user()->id)) }}" class="btn btn-primary w-100">
+                      History Saldo Pemodal
+                    </a>
+                  </div>
+                </div>
+              @endif
+            </div>
+          </div>
+        </div>
+      </div>
     @endif
     <div class="row row-cards mt-3">
         <div class="col-md-12 d-flex justify-content-center">
@@ -177,7 +273,7 @@
                         </div>
                         <div class="row g-2 align-items-center">
                             <div class="col-6 col-sm-4 col-md-2 col-xl py-3">
-                                <a href="#" class="btn btn-primary w-100">
+                                <a href="{{ url('lender/regist') }}" class="btn btn-primary w-100">
                                     Pemodal
                                 </a>
                             </div>
@@ -205,4 +301,31 @@
     @endif
 </div>
 </div>
+<script type="text/javascript">
+  $(document).ready(function () {
+      var charges = document.getElementById('cashout_amount');
+      
+      charges.addEventListener('keyup',function(e){
+          charges.value = formatCurrency(this.value,' ');
+      });
+
+      function formatCurrency(number,prefix)
+          {
+              var number_string = number.replace(/[^.\d]/g, '').toString(),
+                  split	= number_string.split('.'),
+                  sisa 	= split[0].length % 3,
+                  rupiah 	= split[0].substr(0, sisa),
+                  ribuan 	= split[0].substr(sisa).match(/\d{1,3}/gi);
+                  
+              if (ribuan) {
+                  separator = sisa ? ',' : '';
+                  rupiah += separator + ribuan.join(',');
+              }
+              
+              rupiah = split[1] != undefined ? rupiah + '.' + split[1] : rupiah;
+              return prefix == undefined ? rupiah : (rupiah ? '' + rupiah : '');
+          }
+          
+  });
+</script>
 @endsection

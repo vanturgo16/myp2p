@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('borrowers', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
             $table->integer('user_id');
             $table->string('borrower_name');
             $table->string('gender');
@@ -20,12 +20,14 @@ return new class extends Migration
             $table->text('borrower_phone');
             $table->string('borrower_occupation');
             $table->string('borrower_source_income');
-            $table->decimal('borrower_income',10,2);
+            $table->decimal('borrower_income', 10);
+            $table->string('borrower_id_card_no', 16)->nullable();
             $table->text('borrower_id_card');
             $table->string('borrower_bank_name')->nullable();
             $table->string('borrower_accountno')->nullable();
             $table->string('borrower_accountname')->nullable();
             $table->tinyInteger('is_active')->default(1);
+            $table->decimal('loan_limit', 10)->nullable();
             $table->timestamps();
         });
     }

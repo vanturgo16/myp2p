@@ -69,7 +69,7 @@ class BorrowerController extends Controller
                 $path_loc = $request->file('borrower_id_card');
                 $filename = $path_loc->getClientOriginalName();
                 $extension = $path_loc->getClientOriginalExtension();
-                $url = $path_loc->move('storage/id_card/', $filename);
+                $url = $path_loc->move('storage/id_card/borrower/', $filename);
                 //dd($path_loc,$filename,$extension,$url);
             }
 
@@ -267,7 +267,7 @@ class BorrowerController extends Controller
                 $path_loc = $request->file('borrower_id_card');
                 $filename = $path_loc->getClientOriginalName();
                 $extension = $path_loc->getClientOriginalExtension();
-                $url = $path_loc->move('storage/id_card/', $filename);
+                $url = $path_loc->move('storage/id_card/borrower/', $filename);
                 //dd($path_loc,$filename,$extension,$url);
 
                 Borrower::where('id',decrypt($id))->update([

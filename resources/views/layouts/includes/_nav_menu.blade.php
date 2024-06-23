@@ -44,7 +44,7 @@
                           <a href="{{ url('users/borrower') }}" class="dropdown-item">
                             Borrower
                           </a>
-                          <a href="./card-actions.html" class="dropdown-item">
+                          <a href="{{ url('users/lender') }}" class="dropdown-item">
                             Lender
                           </a>
                           <a href="{{ url('users/internal') }}" class="dropdown-item">
@@ -57,6 +57,7 @@
                 </div>
               </li>
             @endif
+
             @if (auth()->user()->role == 'Borrower') <!--untuk Borrower-->              
               <li class="nav-item">
                 <a class="nav-link" href="{{ url('/') }}" >
@@ -77,27 +78,30 @@
                     Profil Data
                   </span>
                 </a>
-              {{-- </li>
+              </li>
+            @endif
+
+            @if (auth()->user()->role == 'Lender') <!--untuk Borrower-->              
               <li class="nav-item">
-                <a class="nav-link" href="{{ url('/borrower/loan/create/'.encrypt(auth()->user()->id)) }}" >
-                  <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/checkbox -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11l3 3l8 -8" /><path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" /></svg>
+                <a class="nav-link" href="{{ url('/') }}" >
+                  <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l-2 0l9 -9l9 9l-2 0" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" /></svg>
                   </span>
                   <span class="nav-link-title">
-                    Pengajuan Pinjaman
+                    Home
                   </span>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="" >
+                <a class="nav-link" href="{{ url('/lender/profile/'.encrypt(auth()->user()->id)) }}" >
                   <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/checkbox -->
-                    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-list"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l11 0" /><path d="M9 12l11 0" /><path d="M9 18l11 0" /><path d="M5 6l0 .01" /><path d="M5 12l0 .01" /><path d="M5 18l0 .01" /></svg>
+                    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /></svg>
                   </span>
                   <span class="nav-link-title">
-                    History Pengajuan Pinjaman
+                    Profil Data
                   </span>
                 </a>
-              </li> --}}
+              </li>
             @endif
           @else
             <li class="nav-item">

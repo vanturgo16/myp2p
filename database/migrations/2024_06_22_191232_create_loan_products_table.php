@@ -12,16 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('loan_products', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
             $table->string('product_name');
-            $table->decimal('platform',3,3);
-            $table->decimal('lender',3,3);
-            $table->decimal('penalty',3,3);
-            $table->decimal('min_loan_amount',13,2);
-            $table->decimal('max_loan_amount',13,2);
+            $table->decimal('platform', 3, 3);
+            $table->decimal('lender', 3, 3);
+            $table->decimal('penalty', 3, 3);
+            $table->string('penalty_unit');
+            $table->decimal('min_loan_amount', 13);
+            $table->decimal('max_loan_amount', 13);
             $table->integer('tenor');
             $table->enum('tenor_type', ['days', 'months']);
-            $table->enum('type', ['1', '2'])->default('1');
+            $table->enum('type', ['advance', 'arrear'])->default('advance');
             $table->timestamps();
         });
     }
