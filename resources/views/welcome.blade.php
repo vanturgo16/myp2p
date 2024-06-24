@@ -61,6 +61,11 @@
             <div class="card-body">
               <div class="row">
                 <div class="col">
+                  Saldo Anda: {{ $balance }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
                   {!! $progress !!}
                 </div>
               </div>

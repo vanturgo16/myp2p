@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Borrower;
 use App\Models\Lender;
+use App\Models\LenderBalance;
 use App\Models\Loan;
 use Illuminate\Http\Request;
 
@@ -61,6 +62,8 @@ class HomeController extends Controller
         elseif(auth()->check() && auth()->user()->role == 'Lender'){
             $id = auth()->user()->id;
 
+            $balance = LenderBalance::where('user_id',$id)->first()->balance;
+
             $lenderStatus = Lender::where('user_id',$id)->first();
             if($lenderStatus->is_active == '0' && $lenderStatus->lender_accountno == ''){
                 $progress = "<ul class='steps steps-green steps-counter my-4'>
@@ -100,7 +103,7 @@ class HomeController extends Controller
                 ';
             }
 
-            return view('welcome',compact('progress','lenderStatus'));
+            return view('welcome',compact('progress','lenderStatus','balance'));
         }
         else{
             $progress = "";
