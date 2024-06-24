@@ -64,7 +64,7 @@ class HomeController extends Controller
 
             $balanceCheck = LenderBalance::where('user_id',$id)->count();
             if ($balanceCheck < 1) {
-                $balance = "0";
+                $balance = "0.00";
             } else {
                 $balance = LenderBalance::where('user_id',$id)->first();
             }
