@@ -186,6 +186,7 @@ class BorrowerController extends Controller
     }
 
     public function confirmSubmitLoan($id){
+        //dd('hai');
         DB::beginTransaction();
         try {
             //cari loan

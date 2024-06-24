@@ -12,7 +12,10 @@ class LoanController extends Controller
      */
     public function index()
     {
-        //
+        $datas = Loan::whereIn('status',['approved', 'funded', 'disbursed', 'paid'])->orderBy('id','desc')->get();
+        //dd($datas);
+
+        return view('loans.index',compact('datas'));
     }
 
     /**

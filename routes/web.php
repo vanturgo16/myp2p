@@ -4,6 +4,7 @@ use App\Http\Controllers\BorrowerController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LenderBalanceTransactionController;
 use App\Http\Controllers\LenderController;
+use App\Http\Controllers\LoanController;
 use App\Http\Controllers\LoanProductController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserController;
@@ -58,6 +59,9 @@ Route::post('/lender/balance/cashin/{id}', [LenderBalanceTransactionController::
 Route::post('/lender/balance/cashout/{id}', [LenderBalanceTransactionController::class, 'cashoutBalance']);
 Route::patch('/lender/balance/approved/{id}', [LenderBalanceTransactionController::class, 'approvedBalance']);
 Route::patch('/lender/balance/rejected/{id}', [LenderBalanceTransactionController::class, 'rejectedBalance']);
+
+//Loan
+Route::get('/loan/', [LoanController::class, 'index']);
 
 //AJAX
 Route::get('/loan-product-details/{id}', [LoanProductController::class, 'getProduct'])->name('getProduct');

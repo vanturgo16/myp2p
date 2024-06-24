@@ -59,6 +59,12 @@ class LenderBalanceTransactionController extends Controller
         $lender_id = Lender::where('user_id',$user_id)->first()->id;
         $topup_amount = str_replace(",", "",$request->cashout_amount);
 
+        //cek dulu ke saldo
+        $cekBal = LenderBalance::where('lender_id',$lender_id)->first()->balance;
+        if ($cekBal < $topup_amount) {
+            return redirect()->back()->with(['status' => 'Saldo Anda Tidak Mencukupi']);
+        }
+
         DB::beginTransaction();
         try {
             $createTopup = LenderBalanceTransaction::create([

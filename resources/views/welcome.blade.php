@@ -67,7 +67,7 @@
               @if ($lenderStatus->is_active == '1')
                 <div class="row g-2 align-items-center">
                   <div class="col-4 col-sm-4 col-md-2 col-xl py-3">
-                    <button type="submit" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#modal-cashin">Cash In Dana Siaga</button>
+                    <button type="submit" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#modal-cashin">Cash In</button>
                     <div class="modal modal-blur fade" id="modal-cashin" tabindex="-1" role="dialog" aria-hidden="true">
                       <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
                         <div class="modal-content">
@@ -113,7 +113,7 @@
                     </div>
                   </div>
                   <div class="col-4 col-sm-4 col-md-2 col-xl py-3">
-                    <button type="submit" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#modal-cashout">Cash Out Dana Siaga</button>
+                    <button type="submit" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#modal-cashout">Cash Out</button>
                     <div class="modal modal-blur fade" id="modal-cashout" tabindex="-1" role="dialog" aria-hidden="true">
                       <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
                         <div class="modal-content">
@@ -138,7 +138,7 @@
                   </div>
                   <div class="col-4 col-sm-4 col-md-2 col-xl py-3">
                     <a href="{{ url('/lender/balance/history/'.encrypt(auth()->user()->id)) }}" class="btn btn-primary w-100">
-                      History Saldo Pemodal
+                      History Saldo
                     </a>
                   </div>
                 </div>
