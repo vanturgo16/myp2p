@@ -62,7 +62,13 @@ class HomeController extends Controller
         elseif(auth()->check() && auth()->user()->role == 'Lender'){
             $id = auth()->user()->id;
 
-            $balance = LenderBalance::where('user_id',$id)->first()->balance;
+            $balanceCheck = LenderBalance::where('user_id',$id)->count();
+            if ($balanceCheck < 1) {
+                $balance = "0";
+            } else {
+                $balance = LenderBalance::where('user_id',$id)->first();
+            }
+            
 
             $lenderStatus = Lender::where('user_id',$id)->first();
             if($lenderStatus->is_active == '0' && $lenderStatus->lender_accountno == ''){
