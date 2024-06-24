@@ -61,15 +61,15 @@
             <div class="card-body">
               <div class="row">
                 <div class="col">
-                  Saldo Anda: {{ $balance }}
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
                   {!! $progress !!}
                 </div>
               </div>
               @if ($lenderStatus->is_active == '1')
+                <div class="row">
+                  <div class="col">
+                    <b>Saldo Anda:</b> {{ number_format($balance,2,",",".") }}
+                  </div>
+                </div>
                 <div class="row g-2 align-items-center">
                   <div class="col-4 col-sm-4 col-md-2 col-xl py-3">
                     <button type="submit" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#modal-cashin">Cash In</button>
