@@ -64,12 +64,12 @@ class HomeController extends Controller
 
             $balanceCheck = LenderBalance::where('user_id',$id)->count();
             if ($balanceCheck < 1) {
-                $balance = "0.00";
+                $balance = 0;
+                $balance = (float)$balance;
             } else {
-                $balance = LenderBalance::where('user_id',$id)->first();
+                $balance = LenderBalance::where('user_id',$id)->first()->balance;
             }
             
-
             $lenderStatus = Lender::where('user_id',$id)->first();
             if($lenderStatus->is_active == '0' && $lenderStatus->lender_accountno == ''){
                 $progress = "<ul class='steps steps-green steps-counter my-4'>
