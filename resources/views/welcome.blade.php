@@ -277,12 +277,12 @@
                             </div>
                         </div>
                         <div class="row g-2 align-items-center">
-                            <div class="col-6 col-sm-4 col-md-2 col-xl py-3">
+                            <div class="col text-center">
                                 <a href="{{ url('lender/regist') }}" class="btn btn-primary w-100">
                                     Pemodal
                                 </a>
                             </div>
-                            <div class="col-6 col-sm-4 col-md-2 col-xl py-3">
+                            <div class="col-6 text-center">
                                 <a href="{{ url('borrower/regist') }}" class="btn btn-primary w-100">
                                   Peminjam
                                 </a>
