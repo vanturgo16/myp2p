@@ -65,60 +65,111 @@
         @foreach ($datas as $data)
         <div class="card mb-2">
             <div class="card-header">
-                <h3 class="card-title">{{ $data->loan_no }}</h3>
+                <h3 class="card-title">
+                  {{ $data->loan_no }}
+                  <br>
+                  <b>Produk: </b>{{ $data->product_name . "- Tenor " . $data->duration_months . " Bulan"  }}
+                </h3>
                 <div class="card-actions">
-                    <button type="submit" class="btn btn-primary ms-auto">Danai</button>
+                  <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-fund{{ $data->loan_id }}">Danai</button>
+
+                  <div class="modal modal-blur fade" id="modal-fund{{ $data->loan_id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Danai Pinjaman {{ $data->loan_no }}</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row">
+                            <div class="col-md-4 col-xl-4">
+                              <div class="mb-3">
+                                <label class="form-label">Saldo Aktif</label>
+                                <div class="form-control-plaintext">{{ number_format($lender->balance,2,",","."); }}</div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-xl-4">
+                              <div class="mb-3">
+                                <label class="form-label">Jumlah Pinjaman</label>
+                                <div class="form-control-plaintext">{{ number_format($data->loan_amount,2,",","."); }}</div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-xl-4">
+                              <div class="mb-3">
+                                <label class="form-label required">Jumlah Pendanaan</label>
+                                <div>
+                                  <select id="fund_amount" name="fund_amount" class="form-select" required>
+                                    @for ($value = 500000; $value <= $data->loan_amount; $value += 500000)
+                                        <option value="{{ $value }}">{{ number_format($value, 2, ',', '.') }}</option>
+                                    @endfor
+                                  </select>
+                                  <small class="form-hint">
+                                    Minimal rupiah untuk mendanai dan kelipatan dana rupiah maksimum pendanaan tidak bisa melebihi saldo aktif anda.
+                                  </small>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
             </div>
             <div class="card-body">
               <div class="datagrid">
                 <div class="datagrid-item">
-                  <div class="datagrid-title">Registrar</div>
-                  <div class="datagrid-content">Third Party</div>
+                  <div class="datagrid-title">Peminjam</div>
+                  <div class="datagrid-content">{{ $data->borrower_name }}</div>
                 </div>
                 <div class="datagrid-item">
-                  <div class="datagrid-title">Nameservers</div>
-                  <div class="datagrid-content">Third Party</div>
+                  <div class="datagrid-title">Tanggal Pengajuan</div>
+                  <div class="datagrid-content">{{ Carbon\Carbon::parse($data->tgl_pinjam)->format('Y-m-d') }}</div>
                 </div>
                 <div class="datagrid-item">
-                  <div class="datagrid-title">Port number</div>
-                  <div class="datagrid-content">3306</div>
-                </div>
-                <div class="datagrid-item">
-                  <div class="datagrid-title">Expiration date</div>
-                  <div class="datagrid-content">–</div>
-                </div>
-                <div class="datagrid-item">
-                  <div class="datagrid-title">Creator</div>
+                  <div class="datagrid-title">Jatuh Tempo</div>
                   <div class="datagrid-content">
-                    <div class="d-flex align-items-center">
-                      <span class="avatar avatar-xs me-2 rounded" style="background-image: url(./static/avatars/000m.jpg)"></span>
-                      Paweł Kuna
-                    </div>
+                    @php
+                      $duedate = Carbon\Carbon::parse($data->tgl_pinjam)->addMonth($data->duration_months)->format('Y-m-d');
+
+                      echo $duedate
+                    @endphp
                   </div>
                 </div>
                 <div class="datagrid-item">
-                  <div class="datagrid-title">Age</div>
-                  <div class="datagrid-content">15 days</div>
+                  <div class="datagrid-title">Jumlah Pinjaman</div>
+                  <div class="datagrid-content">{{ number_format($data->loan_amount,2,",","."); }}</div>
                 </div>
                 <div class="datagrid-item">
-                  <div class="datagrid-title">Edge network</div>
-                  <div class="datagrid-content">
-                    <span class="status status-green">
-                      Active
-                    </span>
-                  </div>
+                  <div class="datagrid-title">Bunga</div>
+                  <div class="datagrid-content">{{ $data->lender + $data->provider . "%" }}</div>
                 </div>
                 <div class="datagrid-item">
-                  <div class="datagrid-title">Avatars list</div>
+                  <div class="datagrid-title">Asuransi</div>
+                  <div class="datagrid-content">{{ $data->insurance . "%" }}</div>
+                </div>
+                <div class="datagrid-item">
+                  <div class="datagrid-title">Provisi</div>
+                  <div class="datagrid-content">{{ $data->platform . "%" }}</div>
+                </div>
+                <div class="datagrid-item">
+                  <div class="datagrid-title">Denda</div>
+                  <div class="datagrid-content">{{ $data->penalty . "%" }}</div>
+                </div>
+                <div class="datagrid-item">
+                  <div class="datagrid-title">Progress Pendanaan {{ number_format($data->loan_funded,2,",",".") . "/" . number_format($data->loan_amount,2,",",".") }}</div>
                   <div class="datagrid-content">
-                    <div class="avatar-list avatar-list-stacked">
-                      <span class="avatar avatar-xs rounded" style="background-image: url(./static/avatars/000m.jpg)"></span>
-                      <span class="avatar avatar-xs rounded">JL</span>
-                      <span class="avatar avatar-xs rounded" style="background-image: url(./static/avatars/002m.jpg)"></span>
-                      <span class="avatar avatar-xs rounded" style="background-image: url(./static/avatars/003m.jpg)"></span>
-                      <span class="avatar avatar-xs rounded" style="background-image: url(./static/avatars/000f.jpg)"></span>
-                      <span class="avatar avatar-xs rounded">+3</span>
+                    <div class="progress mb-2">
+                      @php
+                        $percent = ($data->loan_funded/$data->loan_amount)*100;
+                      @endphp
+                      <div class="progress-bar" style="{{ 'width:' . $percent . '%' }}" role="progressbar" aria-valuenow="{{ $percent }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{ $percent.'% complete' }}">
+                        <span class="visually-show">{{  $percent . "%" }}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -140,5 +191,4 @@
         });
     });
 </script>
-
 @endsection

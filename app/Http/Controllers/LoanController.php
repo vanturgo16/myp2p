@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Lender;
 use App\Models\Loan;
 use Illuminate\Http\Request;
 
@@ -12,10 +13,23 @@ class LoanController extends Controller
      */
     public function index()
     {
-        $datas = Loan::whereIn('status',['approved', 'funded', 'disbursed', 'paid'])->orderBy('id','desc')->get();
-        //dd($datas);
+        $datas = Loan::select(
+            'borrowers.*',
+            'loans.*',
+            'loan_products.*',
+            'loans.id as loan_id',
+            'loans.created_at as tgl_pinjam'
+        )
+        ->whereIn('loans.status',['approved', 'funded', 'disbursed', 'paid'])
+        ->leftJoin('borrowers','loans.borrower_id','borrowers.id')
+        ->leftJoin('loan_products','loans.loan_product_id','loan_products.id')
+        ->orderBy('loans.id','desc')->get();
+        
+        $lender_id = auth()->user()->id;
+        $lender = Lender::leftJoin('lender_balances','lenders.user_id','lender_balances.user_id')
+            ->where('lenders.user_id',$lender_id)->first();
 
-        return view('loans.index',compact('datas'));
+        return view('loans.index',compact('datas','lender'));
     }
 
     /**

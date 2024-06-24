@@ -30,7 +30,7 @@
               <div class="col">
                 <ul class='steps steps-green steps-counter my-4'>
                     <li 
-                        @if ($status == 'approval')
+                        @if ($status == 'approval' || $status == 'pending')
                             class='step-item active'
                         @else
                             class='step-item'
@@ -96,9 +96,7 @@
                             <th><button class="table-sort" data-sort="sort-type">Tenor</button></th>
                             <th><button class="table-sort" data-sort="sort-type">Tanggal Pengajuan</button></th>
                             <th><button class="table-sort" data-sort="sort-type">Tanggal Pencairan</button></th>
-                            @if (auth()->user()->role == 'Admin')
                             <th><button class="table-sort" data-sort="sort-type">Aksi</button></th>
-                            @endif
                             </tr>
                         </thead>
                         <tbody class="table-tbody">
@@ -142,6 +140,13 @@
                                     @else
                                         
                                     @endif
+                                </td>
+                                @elseif (auth()->user()->role == 'Borrower' && $data->status == 'pending')
+                                <td>
+                                    <a href="{{ url('/borrower/loan/confirm/'.encrypt($data->id_loan)) }}" class="btn btn-primary btn-xs">
+                                        <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-checks"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 12l5 5l10 -10" /><path d="M2 12l5 5m5 -5l5 -5" /></svg>
+                                        Konfirmasi Pinjaman
+                                    </a>
                                 </td>
                                 @endif
                             </tr>

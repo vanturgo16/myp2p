@@ -111,13 +111,33 @@ class BorrowerController extends Controller
             DB::beginTransaction();
             try {
                 $detailProduct = LoanProduct::where('id',$request->loan_product)->first();
-                $interest = $detailProduct->platform+$detailProduct->lender;
+
+                $platform = $detailProduct->platform;
+                $platform_amount = ($platform * $loan_amount)/100;
+
+                $insurance = $detailProduct->insurance;
+                $insurance_amount = $loan_amount * (($insurance * (30 * $detailProduct->tenor))/100);
+
+                $lender = $detailProduct->lender;
+                $lender_amount = $loan_amount * (($lender * (30 * $detailProduct->tenor))/100);
+
+                $provider = $detailProduct->provider;
+                $provider_amount = $loan_amount * (($provider * (30 * $detailProduct->tenor))/100);
+
                 $storeLoan = Loan::create([
                     'borrower_id' => $request->borrower_id,
                     'loan_product_id' => $request->loan_product,
+                    'product_type' => $detailProduct->type,
                     'loan_amount' => $loan_amount,
                     'loan_purpose' => $request->loan_purpose,
-                    'interest_rate' => $interest,
+                    'platform' => $platform,
+                    'platform_amount' => $platform_amount,
+                    'insurance' => $insurance,
+                    'insurance_amount' => $insurance_amount,
+                    'lender' => $lender,
+                    'lender_amount' => $lender_amount,
+                    'provider' => $provider,
+                    'provider_amount' => $provider_amount,
                     'duration_months' => $detailProduct->tenor,
                     'status' => 'pending',
                     'is_active' => '0'
@@ -147,36 +167,37 @@ class BorrowerController extends Controller
             ->where('loans.id',decrypt($id))
             ->first();
         
-        $detailProduct = LoanProduct::where('id',$borrower->loan_product_id)->first();
-        $tenor = $detailProduct->tenor;
-        $tenor_type = $detailProduct->tenor_type;
+        $product_type = $borrower->product_type;
+        $tenor = $borrower->duration_months;
+        $tenor_type = "Bulan";
+        //dd($borrower);
         
-        if ($detailProduct->type == 'advance') {
+        if ($product_type == 'advance') {
             # code...
             $amount = $borrower->loan_amount;
-            $days = $detailProduct->tenor * 30;
-            $admin_fee = (($detailProduct->platform * $days) * $amount)/100;
-            $lender = (($detailProduct->lender * $days) * $amount)/100;
+            $days = $borrower->tenor * 30;
+            $platform_amount = $borrower->platform_amount;
+            $interest = $borrower->insurance_amount + $borrower->lender_amount + $borrower->provider_amount;
             $totalPay = $amount;
-            $disburst_amount = $amount - ($admin_fee + $lender);
-            $installment = $amount/$detailProduct->tenor;
+            $disburst_amount = $amount - ($platform_amount + $interest);
+            $installment = $amount/$tenor;
         }
         else{
             $amount = $borrower->loan_amount;
-            $days = $detailProduct->tenor * 30;
-            $admin_fee = (($detailProduct->platform * $days) * $amount)/100;
-            $lender = (($detailProduct->lender * $days) * $amount)/100;
-            $totalPay = $amount + ($admin_fee + $lender);
+            $days = $borrower->tenor * 30;
+            $platform_amount = $borrower->platform_amount;
+            $interest = $borrower->insurance_amount + $borrower->lender_amount + $borrower->provider_amount;
+            $totalPay = $amount + ($platform_amount + $interest);
             $disburst_amount = $amount;
-            $installment = $totalPay/$detailProduct->tenor;
+            $installment = $totalPay/$tenor;
         }
 
         return view('borrowers.confirm_loan',compact(
             'borrower',
             'amount',
             'days',
-            'admin_fee',
-            'lender',
+            'platform_amount',
+            'interest',
             'totalPay',
             'disburst_amount',
             'installment',
@@ -190,40 +211,36 @@ class BorrowerController extends Controller
         DB::beginTransaction();
         try {
             //cari loan
-            $loan = Loan::where('id',decrypt($id))->first();
+            $borrower = Loan::where('id',decrypt($id))->first();
             //logic product
-            $detailProduct = LoanProduct::where('id',$loan->loan_product_id)->first();
-            if ($detailProduct->type == 'advance') {
+            $product_type = $borrower->product_type;
+            $tenor = $borrower->duration_months;
+            $tenor_type = "Bulan";
+            //dd($borrower);
+        
+            if ($product_type == 'advance') {
                 # code...
-                $amount = $loan->loan_amount;
-                $days = $detailProduct->tenor * 30;
-                $totalPlatform = $detailProduct->platform * $days;
-                $admin_fee = (($detailProduct->platform * $days) * $amount)/100;
-                $totalLender = $detailProduct->lender * $days;
-                $lender = (($detailProduct->lender * $days) * $amount)/100;
+                $amount = $borrower->loan_amount;
+                $days = $borrower->tenor * 30;
+                $platform_amount = $borrower->platform_amount;
+                $interest = $borrower->insurance_amount + $borrower->lender_amount + $borrower->provider_amount;
                 $totalPay = $amount;
-                $disburst_amount = $amount - ($admin_fee + $lender);
-                $installment = $amount/$detailProduct->tenor;
+                $disburst_amount = $amount - ($platform_amount + $interest);
+                $installment = $amount/$tenor;
             }
             else{
-                $amount = $loan->loan_amount;
-                $days = $detailProduct->tenor * 30;
-                $totalPlatform = $detailProduct->platform * $days;
-                $admin_fee = (($detailProduct->platform * $days) * $amount)/100;
-                $totalLender = $detailProduct->lender * $days;
-                $lender = (($detailProduct->lender * $days) * $amount)/100;
-                $totalPay = $amount + ($admin_fee + $lender);
+                $amount = $borrower->loan_amount;
+                $days = $borrower->tenor * 30;
+                $platform_amount = $borrower->platform_amount;
+                $interest = $borrower->insurance_amount + $borrower->lender_amount + $borrower->provider_amount;
+                $totalPay = $amount + ($platform_amount + $interest);
                 $disburst_amount = $amount;
-                $installment = $totalPay/$detailProduct->tenor;
+                $installment = $totalPay/$tenor;
             }
 
             $currentDate = Carbon::now()->format('Ymd');
             Loan::where('id',decrypt($id))->update([
-                'loan_no' => 'PJM/'.$currentDate. "/" .decrypt($id),
-                'platform' => $totalPlatform,
-                'platform_amount' => $admin_fee,
-                'lender' => $totalLender,
-                'lender_amount' => $lender,
+                'loan_no' => 'LO/'.$currentDate. "/" .decrypt($id),
                 'status' => 'approval',
                 'disburst_amount' => $disburst_amount,
                 'total_pay' => $totalPay

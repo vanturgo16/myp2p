@@ -139,10 +139,10 @@
                         dataType: 'json',
                         success: function(data) {
                             // Menampilkan detail produk pinjaman di elemen label
-                            var interest = (parseFloat(data.platform) + parseFloat(data.lender)).toFixed(3);
+                            var interest = parseFloat(data.insurance) + parseFloat(data.lender) + parseFloat(data.provider);
                             $('#loan_product_name').text('Nama Produk: ' + data.product_name);
-                            $('#loan_product_service_fee').text('Biaya Layanan: ' + data.platform + '% /days');
-                            $('#loan_product_interest').text('Bunga: ' + data.lender + '% /days');
+                            $('#loan_product_service_fee').text('Biaya Layanan: ' + data.platform + '%');
+                            $('#loan_product_interest').text('Bunga: ' + interest.toFixed(3) + '% per hari');
                             $('#loan_product_tenor').text('Tenor: ' + data.tenor + ' ' + data.tenor_type);
 
                             // Tampilkan div dengan detail produk

@@ -149,7 +149,7 @@
                                         <div class="col-md-12 col-xl-12">
                                             <div class="mb-3">
                                                 <div class="form-label required">Plafon</div>
-                                                @if ($borrower->loan_limit == '0')
+                                                @if ($borrower->loan_limit == '')
                                                 <input type="text" class="form-control" name="loan_limit" id="loan_limit" placeholder="Input plafon" required>
                                                 @else
                                                 {{ number_format($borrower->loan_limit,2,",",".") }}

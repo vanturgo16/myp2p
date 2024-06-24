@@ -40,8 +40,8 @@
                                             <div class="col-md-6 col-xl-12">
                                                 <div class="mb-3">
                                                     <label class="form-label">Nilai Pinjaman: {{ number_format($amount,2,",","."); }}</label>
-                                                    <label class="form-label">Biaya Admin: {{ number_format($admin_fee,2,",","."); }}</label>
-                                                    <label class="form-label">Bunga: {{ number_format($lender,2,",","."); }}</label>
+                                                    <label class="form-label">Biaya Admin: {{ number_format($platform_amount,2,",","."); }}</label>
+                                                    <label class="form-label">Bunga: {{ number_format($interest ,2,",","."); }}</label>
                                                     <label class="form-label">Nilai Pencairan: {{ number_format($disburst_amount,2,",","."); }}</label>
                                                     <label class="form-label">Nilai Pengembalian: {{ number_format($totalPay,2,",","."); }}</label>
                                                     <label class="form-label">Tenor: {{ $tenor." ".$tenor_type }}</label>
