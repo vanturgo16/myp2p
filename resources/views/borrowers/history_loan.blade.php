@@ -125,22 +125,22 @@
                                 @if (auth()->user()->role == 'Admin')
                                 <td>
                                     @if ($data->status == "approval")
-                                    <form action="{{ url('/borrower/loan/approved', encrypt($data->id_loan)) }}" method="POST" style="display:inline-block;">
-                                        @csrf
-                                        @method('patch')
-                                        <button type="submit" class="btn btn-success btn-xs" onclick="return confirm('Are You Sure APPROVED this transaction?')">
-                                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-like"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 16m0 1a1 1 0 0 1 1 -1h1a1 1 0 0 1 1 1v3a1 1 0 0 1 -1 1h-1a1 1 0 0 1 -1 -1z" /><path d="M6 20a1 1 0 0 0 1 1h3.756a1 1 0 0 0 .958 -.713l1.2 -3c.09 -.303 .133 -.63 -.056 -.884c-.188 -.254 -.542 -.403 -.858 -.403h-2v-2.467a1.1 1.1 0 0 0 -2.015 -.61l-1.985 3.077v4z" /><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M5 12.1v-7.1a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2h-2.3" /></svg>
-                                            Approved
-                                        </button>
-                                    </form>
-                                    <form action="{{ url('/borrower/loan/rejected', encrypt($data->id_loan)) }}" method="POST" style="display:inline-block;">
-                                        @csrf
-                                        @method('patch')
-                                        <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Are You Sure REJECTED this transaction?')">
-                                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-dislike"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 14m0 1a1 1 0 0 1 1 -1h1a1 1 0 0 1 1 1v3a1 1 0 0 1 -1 1h-1a1 1 0 0 1 -1 -1z" /><path d="M6 15a1 1 0 0 1 1 -1h3.756a1 1 0 0 1 .958 .713l1.2 3c.09 .303 .133 .63 -.056 .884c-.188 .254 -.542 .403 -.858 .403h-2v2.467a1.1 1.1 0 0 1 -2.015 .61l-1.985 -3.077v-4z" /><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M5 11v-6a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2h-2.5" /></svg>
-                                            Rejected
-                                        </button>
-                                    </form>
+                                        <form action="{{ url('/borrower/loan/approved', encrypt($data->id_loan)) }}" method="POST" style="display:inline-block;">
+                                            @csrf
+                                            @method('patch')
+                                            <button type="submit" class="btn btn-success btn-xs" onclick="return confirm('Are You Sure APPROVED this transaction?')">
+                                                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-like"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 16m0 1a1 1 0 0 1 1 -1h1a1 1 0 0 1 1 1v3a1 1 0 0 1 -1 1h-1a1 1 0 0 1 -1 -1z" /><path d="M6 20a1 1 0 0 0 1 1h3.756a1 1 0 0 0 .958 -.713l1.2 -3c.09 -.303 .133 -.63 -.056 -.884c-.188 -.254 -.542 -.403 -.858 -.403h-2v-2.467a1.1 1.1 0 0 0 -2.015 -.61l-1.985 3.077v4z" /><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M5 12.1v-7.1a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2h-2.3" /></svg>
+                                                Approved
+                                            </button>
+                                        </form>
+                                        <form action="{{ url('/borrower/loan/rejected', encrypt($data->id_loan)) }}" method="POST" style="display:inline-block;">
+                                            @csrf
+                                            @method('patch')
+                                            <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Are You Sure REJECTED this transaction?')">
+                                                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-dislike"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 14m0 1a1 1 0 0 1 1 -1h1a1 1 0 0 1 1 1v3a1 1 0 0 1 -1 1h-1a1 1 0 0 1 -1 -1z" /><path d="M6 15a1 1 0 0 1 1 -1h3.756a1 1 0 0 1 .958 .713l1.2 3c.09 .303 .133 .63 -.056 .884c-.188 .254 -.542 .403 -.858 .403h-2v2.467a1.1 1.1 0 0 1 -2.015 .61l-1.985 -3.077v-4z" /><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M5 11v-6a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2h-2.5" /></svg>
+                                                Rejected
+                                            </button>
+                                        </form>
                                     @elseif ($data->status == "funded" && ($data->loan_amount == $data->loan_funded))
                                         <form action="{{ url('/borrower/loan/disburst', encrypt($data->id_loan)) }}" method="POST" style="display:inline-block;">
                                             @csrf
@@ -150,6 +150,11 @@
                                                 Disburstment
                                             </button>
                                         </form>
+                                    @elseif ($data->status == "disbursed")
+                                        <a href="{{ url('/loan/payment/list', encrypt($data->loan_no)) }}" class="btn btn-warning btn-xs">
+                                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-coins"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 14c0 1.657 2.686 3 6 3s6 -1.343 6 -3s-2.686 -3 -6 -3s-6 1.343 -6 3z" /><path d="M9 14v4c0 1.656 2.686 3 6 3s6 -1.344 6 -3v-4" /><path d="M3 6c0 1.072 1.144 2.062 3 2.598s4.144 .536 6 0c1.856 -.536 3 -1.526 3 -2.598c0 -1.072 -1.144 -2.062 -3 -2.598s-4.144 -.536 -6 0c-1.856 .536 -3 1.526 -3 2.598z" /><path d="M3 6v10c0 .888 .772 1.45 2 2" /><path d="M3 11c0 .888 .772 1.45 2 2" /></svg>
+                                            Tabel Rencana Pembayaran
+                                        </a>
                                     @endif
                                 </td>
                                 @elseif (auth()->user()->role == 'Borrower' && $data->status == 'pending')
@@ -157,6 +162,13 @@
                                     <a href="{{ url('/borrower/loan/confirm/'.encrypt($data->id_loan)) }}" class="btn btn-primary btn-xs">
                                         <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-checks"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 12l5 5l10 -10" /><path d="M2 12l5 5m5 -5l5 -5" /></svg>
                                         Konfirmasi Pinjaman
+                                    </a>
+                                </td>
+                                @elseif (auth()->user()->role == 'Borrower' && $data->status == 'disbursed')
+                                <td>
+                                    <a href="{{ url('/loan/payment/list', encrypt($data->loan_no)) }}" class="btn btn-warning btn-xs">
+                                        <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-coins"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 14c0 1.657 2.686 3 6 3s6 -1.343 6 -3s-2.686 -3 -6 -3s-6 1.343 -6 3z" /><path d="M9 14v4c0 1.656 2.686 3 6 3s6 -1.344 6 -3v-4" /><path d="M3 6c0 1.072 1.144 2.062 3 2.598s4.144 .536 6 0c1.856 -.536 3 -1.526 3 -2.598c0 -1.072 -1.144 -2.062 -3 -2.598s-4.144 -.536 -6 0c-1.856 .536 -3 1.526 -3 2.598z" /><path d="M3 6v10c0 .888 .772 1.45 2 2" /><path d="M3 11c0 .888 .772 1.45 2 2" /></svg>
+                                        Tabel Rencana Pembayaran
                                     </a>
                                 </td>
                                 @endif

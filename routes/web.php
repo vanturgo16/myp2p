@@ -64,6 +64,10 @@ Route::patch('/lender/balance/rejected/{id}', [LenderBalanceTransactionControlle
 //Loan
 Route::get('/loan/', [LoanController::class, 'index']);
 Route::post('/loan/funded/{loan_id}', [LoanController::class, 'loanFunded']);
+Route::get('/loan/payment/list/{loan_no}', [LoanController::class, 'paymentList']);
+Route::get('/borrower/loan/paid/{inv_id}', [LoanController::class, 'paidLoan']);
+Route::get('/borrower/loan/paid-confirm/{inv_id}', [LoanController::class, 'paidConfirm']);
+Route::get('/borrower/loan/paid-unconfirm/{inv_id}', [LoanController::class, 'paidUnconfirm']);
 
 //AJAX
 Route::get('/loan-product-details/{id}', [LoanProductController::class, 'getProduct'])->name('getProduct');

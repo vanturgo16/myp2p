@@ -423,6 +423,7 @@ class BorrowerController extends Controller
                     'outstanding' => $outstanding,
                     'current_outstanding' => $outstanding,
                     'penalty' => '0',
+                    'due_date' => Carbon::parse(now())->addMonths($i+1),
                     'status' => 'not paid'
                 ]);
 
