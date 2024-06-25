@@ -71,51 +71,63 @@
                   <b>Produk: </b>{{ $data->product_name . "- Tenor " . $data->duration_months . " Bulan"  }}
                 </h3>
                 <div class="card-actions">
+                  @php
+                    $percent = ($data->loan_funded/$data->loan_amount)*100;
+                  @endphp
+                  @if ($percent < 100)
                   <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-fund{{ $data->loan_id }}">Danai</button>
+                  @endif
 
                   <div class="modal modal-blur fade" id="modal-fund{{ $data->loan_id }}" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title">Danai Pinjaman {{ $data->loan_no }}</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                          <div class="row">
-                            <div class="col-md-4 col-xl-4">
-                              <div class="mb-3">
-                                <label class="form-label">Saldo Aktif</label>
-                                <div class="form-control-plaintext">{{ number_format($lender->balance,2,",","."); }}</div>
+                      <form action="{{ url('/loan/funded',encrypt($data->loan_id)) }}" method="post" enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Danai Pinjaman {{ $data->loan_no }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="row">
+                              <div class="col-md-4 col-xl-4">
+                                <div class="mb-3">
+                                  <label class="form-label">Saldo Aktif</label>
+                                  <div class="form-control-plaintext">{{ number_format($lender->balance,2,",","."); }}</div>
+                                </div>
                               </div>
-                            </div>
-                            <div class="col-md-4 col-xl-4">
-                              <div class="mb-3">
-                                <label class="form-label">Jumlah Pinjaman</label>
-                                <div class="form-control-plaintext">{{ number_format($data->loan_amount,2,",","."); }}</div>
+                              <div class="col-md-4 col-xl-4">
+                                <div class="mb-3">
+                                  <label class="form-label">Jumlah Yang Bisa Didanai</label>
+                                  <div class="form-control-plaintext">{{ number_format($data->loan_amount - $data->loan_funded ,2,",","."); }}</div>
+                                </div>
                               </div>
-                            </div>
-                            <div class="col-md-4 col-xl-4">
-                              <div class="mb-3">
-                                <label class="form-label required">Jumlah Pendanaan</label>
-                                <div>
-                                  <select id="fund_amount" name="fund_amount" class="form-select" required>
-                                    @for ($value = 500000; $value <= $data->loan_amount; $value += 500000)
-                                        <option value="{{ $value }}">{{ number_format($value, 2, ',', '.') }}</option>
-                                    @endfor
-                                  </select>
-                                  <small class="form-hint">
-                                    Minimal rupiah untuk mendanai dan kelipatan dana rupiah maksimum pendanaan tidak bisa melebihi saldo aktif anda.
-                                  </small>
+                              <div class="col-md-4 col-xl-4">
+                                <div class="mb-3">
+                                  <label class="form-label required">Jumlah Pendanaan</label>
+                                  <div>
+                                    <select id="fund_amount" name="fund_amount" class="form-select" required>
+                                      @php
+                                          $availibility = $data->loan_amount - $data->loan_funded;
+                                      @endphp
+                                      @for ($value = 500000; $value < $availibility; $value += 500000)
+                                          <option value="{{ $value }}">{{ number_format($value, 2, ',', '.') }}</option>
+                                      @endfor
+                                        <option value="{{ $availibility }}">{{ number_format($availibility, 2, ',', '.') }}</option>
+                                    </select>
+                                    <small class="form-hint">
+                                      Minimal rupiah untuk mendanai dan kelipatan dana rupiah maksimum pendanaan tidak bisa melebihi saldo aktif anda.
+                                    </small>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+                          </div>
                         </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
-                          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
-                        </div>
-                      </div>
+                      </form>
                     </div>
                   </div>
                 </div>
@@ -164,11 +176,8 @@
                   <div class="datagrid-title">Progress Pendanaan {{ number_format($data->loan_funded,2,",",".") . "/" . number_format($data->loan_amount,2,",",".") }}</div>
                   <div class="datagrid-content">
                     <div class="progress mb-2">
-                      @php
-                        $percent = ($data->loan_funded/$data->loan_amount)*100;
-                      @endphp
                       <div class="progress-bar" style="{{ 'width:' . $percent . '%' }}" role="progressbar" aria-valuenow="{{ $percent }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{ $percent.'% complete' }}">
-                        <span class="visually-show">{{  $percent . "%" }}</span>
+                        <span class="visually-hidden">{{  $percent . "%" }}</span>
                       </div>
                     </div>
                   </div>

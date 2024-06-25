@@ -38,13 +38,13 @@
                         Review Pinjaman
                     </li>
                     <li 
-                        @if ($status == 'approved' || $status == 'rejected')
+                        @if ($status == 'approved' || $status == 'rejected' || $status == 'funded')
                             class='step-item active'
                         @else
                             class='step-item'
                         @endif>
 
-                        @if ($status == 'approved')
+                        @if ($status == 'approved' || $status == 'funded')
                             Disetujui
                         @elseif ($status == 'rejected')
                             Ditolak
@@ -102,7 +102,9 @@
                         <tbody class="table-tbody">
                             @foreach ($datas as $data)
                             <tr>
-                                <td><span class="badge bg-blue text-blue-fg">{{ $data->status }}</span></td>
+                                <td>
+                                    <span class="badge bg-blue text-blue-fg">{{ $data->status }}</span>
+                                </td>
                                 <td>{{ $data->loan_no }}</td> 
                                 <td>{{ number_format($data->loan_amount,2,",",".") }}</td>
                                 <td>{{ number_format($data->lender_amount,2,",",".") }}</td>
@@ -114,6 +116,8 @@
                                 <td>
                                     @if ($data->status == 'approved')
                                         <i class="text-info">Proses Pendanaan</i>
+                                    @elseif ($data->status == 'funded')
+                                        <i class="text-info">Proses Pencairan</i>
                                     @else
                                         {{ $data->disburst_date }}
                                     @endif
@@ -137,8 +141,15 @@
                                             Rejected
                                         </button>
                                     </form>
-                                    @else
-                                        
+                                    @elseif ($data->status == "funded" && ($data->loan_amount == $data->loan_funded))
+                                        <form action="{{ url('/borrower/loan/disburst', encrypt($data->id_loan)) }}" method="POST" style="display:inline-block;">
+                                            @csrf
+                                            @method('patch')
+                                            <button type="submit" class="btn btn-warning btn-xs" onclick="return confirm('Are You Sure DISBURST this transaction?')">
+                                                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-cash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 9m0 2a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z" /><path d="M14 14m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 9v-2a2 2 0 0 0 -2 -2h-10a2 2 0 0 0 -2 2v6a2 2 0 0 0 2 2h2" /></svg>
+                                                Disburstment
+                                            </button>
+                                        </form>
                                     @endif
                                 </td>
                                 @elseif (auth()->user()->role == 'Borrower' && $data->status == 'pending')

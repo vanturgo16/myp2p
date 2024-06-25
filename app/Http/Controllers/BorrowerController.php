@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Borrower;
+use App\Models\Invoice;
+use App\Models\LenderBalance;
+use App\Models\LenderBalanceTransaction;
 use App\Models\Loan;
 use App\Models\LoanProduct;
 use App\Models\User;
@@ -26,7 +29,7 @@ class BorrowerController extends Controller
         $loanCount = Loan::where('borrower_id',$borrower_id->id)->count();
 
         if($loanCount > 0){
-            $loan = Loan::where('borrower_id',$borrower_id->id)->where('is_active','0')->orderBy('id','desc')->first();
+            $loan = Loan::where('borrower_id',$borrower_id->id)->orderBy('id','desc')->first();
             $status = $loan->status;
             $datas = Loan::select(
                 'loans.*',
@@ -364,5 +367,85 @@ class BorrowerController extends Controller
             session()->flash('status', 'Gagal Rejected Pinjaman');
             return redirect()->back();
         }       
+    }
+
+    public function disburstLoan($id){
+        //dd('cairin yuk');
+        DB::beginTransaction();
+        try {
+            $loan = Loan::where('id',decrypt($id))->first();
+            //settled transaksi FU Pemodal
+            $approvedFU = LenderBalanceTransaction::where('ref_no',$loan->loan_no)
+            ->update([
+                'status' => 'approved',
+                'settled_by' => auth()->user()->id,
+                'settled_date' => now()
+            ]);
+
+            //create pendapatan pemodal
+            $fundingTrans = LenderBalanceTransaction::where('ref_no',$loan->loan_no)->get();
+            foreach ($fundingTrans as $transaction) {
+                # code...
+                $amount = ($loan->lender * ($loan->duration_months*30)/100) * $transaction->amount;
+                $createFU = LenderBalanceTransaction::create([
+                    'trans_type' => 'interest',
+                    'ref_no' => $loan->loan_no,
+                    'user_id' => $transaction->user_id,
+                    'lender_id' => $transaction->lender_id,
+                    'amount' => $amount,
+                    'status' => 'approved',
+                    'settled_by' => auth()->user()->id,
+                    'settled_date' => now()
+                ]);
+
+                $currentDate = Carbon::now()->format('Ymd');
+                $updatenoTrans = LenderBalanceTransaction::where('id',$createFU->id)->update([
+                    'trans_no' => 'CI/'.$currentDate. "/" .$createFU->id,
+                ]);
+
+                //update balance pemodal
+                $balance = LenderBalance::where('lender_id',$transaction->lender_id)->first();
+                $balance = $balance->balance + $amount;
+
+                $updateBal = LenderBalance::where('lender_id',$transaction->lender_id)
+                    ->update([
+                        'balance' => $balance
+                    ]);
+            }
+
+            //masuk ke table tagihan (sampe sini)
+            $tenor = $loan->duration_months;
+            $outstanding = $loan->total_pay/$tenor;
+            for ($i=0; $i < $tenor ; $i++) { 
+                $storeInvoice = Invoice::create([
+                    'loan_no' => $loan->loan_no,
+                    'borrower_id' => $loan->borrower_id,
+                    'outstanding' => $outstanding,
+                    'current_outstanding' => $outstanding,
+                    'penalty' => '0',
+                    'status' => 'not paid'
+                ]);
+
+                // Perbarui inv_no dengan primary key id dari tabel invoice yang baru saja disimpan
+                $storeInvoice->inv_no = 'INV/' . $currentDate . "/" . $storeInvoice->id;
+                $storeInvoice->save();
+            }
+
+            //ubah status loan
+            Loan::where('id',decrypt($id))->update([
+                'status' => 'disbursed',
+                'disburst_date' => now(),
+                'is_active' => '1'
+            ]);
+
+            DB::commit();
+            session()->flash('status', 'Sukses Cairkan Pinjaman');
+            return redirect()->back();
+        } catch (\Throwable $th) {
+            dd($th);
+            DB::rollback();
+            session()->flash('status', 'Gagal Cairkan Pinjaman');
+            return redirect()->back();
+        }    
     }
 }

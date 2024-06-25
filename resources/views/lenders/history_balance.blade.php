@@ -71,9 +71,10 @@
                         <thead>
                             <tr>
                             <th><button class="table-sort" data-sort="sort-type">Status</button></th>
-                            <th><button class="table-sort" data-sort="sort-type">Tipe Transaksi</button></th>
-                            <th><button class="table-sort" data-sort="sort-name">Nominal Topup</button></th>
-                            <th><button class="table-sort" data-sort="sort-name">Tanggal Topup</button></th>
+                            <th><button class="table-sort" data-sort="sort-type">No Transaksi</button></th>
+                            <th><button class="table-sort" data-sort="sort-type">Jenis Transaksi</button></th>
+                            <th><button class="table-sort" data-sort="sort-name">Nominal Transaksi</button></th>
+                            <th><button class="table-sort" data-sort="sort-name">Tanggal Transaksi</button></th>
                             <th><button class="table-sort" data-sort="sort-city">Tanggal Disetujui</button></th>
                             @if (auth()->user()->role == 'Admin')
                             <th><button class="table-sort" data-sort="sort-type">Aksi</button></th>
@@ -90,21 +91,28 @@
                                         <span class="badge bg-red text-red-fg">{{ $data->status }}</span>
                                     @endif
                                 </td>
+                                <td>{{ $data->trans_no }}</td>
                                 <td>{{ $data->trans_type }}</td>
                                 <td>
-                                    {{ number_format($data->amount,2,",",".") }}
+                                    @if($data->trans_type == 'cash out' || $data->trans_type == 'funding')
+                                        {{ "-" . number_format($data->amount,2,",",".") }}
+                                    @else
+                                        {{ number_format($data->amount,2,",",".") }}
+                                    @endif
                                 </td> 
                                 <td>{{ $data->created_at }}</td>
                                 <td>
-                                    @if ($data->status == 'pending')
+                                    @if ($data->status == "pending" && $data->trans_type != 'funding')
                                         <i class="text-info">Proses Pengecekan Transaksi</i>
+                                    @elseif($data->status == "pending" && $data->trans_type == 'funding')
+                                        <i class="text-info">Proses Pendanaan</i>
                                     @else
                                         {{ $data->settled_date }}
                                     @endif
                                 </td>
                                 @if (auth()->user()->role == 'Admin')
                                 <td>
-                                    @if ($data->status == "pending")
+                                    @if ($data->status == "pending" && $data->trans_type != 'funding')
                                     <form action="{{ url('/lender/balance/approved', encrypt($data->id)) }}" method="POST" style="display:inline-block;">
                                         @csrf
                                         @method('patch')

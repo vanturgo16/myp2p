@@ -3,8 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lender;
+use App\Models\LenderBalance;
+use App\Models\LenderBalanceTransaction;
 use App\Models\Loan;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class LoanController extends Controller
 {
@@ -32,51 +37,66 @@ class LoanController extends Controller
         return view('loans.index',compact('datas','lender'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+    public function loanFunded(Request $request,$loan_id){
+        //cek limit
+        $user_id = auth()->user()->id;
+        $lender = Lender::select(
+            'lenders.*',
+            'lender_balances.balance'
+        )
+        ->leftJoin('lender_balances','lenders.user_id','lender_balances.user_id')
+        ->where('lenders.user_id',$user_id)->first();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        if($lender->balance < $request->fund_amount){
+            return redirect()->back()->with('fail','Saldo aktif anda tidak mencukupi untuk mendanai pinjaman ini');
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Loan $loan)
-    {
-        //
-    }
+        DB::beginTransaction();
+        try {
+            //query loan
+            $loan = Loan::where('id',decrypt($loan_id))->first();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Loan $loan)
-    {
-        //
-    }
+            //kurangi balance
+            $balance = $lender->balance - $request->fund_amount;
+            $updateBalance = LenderBalance::where('lender_balances.user_id',$user_id)
+                ->update([
+                    'balance' => $balance
+                ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Loan $loan)
-    {
-        //
-    }
+            //update loan funded
+            $loan_funded = $loan->loan_funded + $request->fund_amount;
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Loan $loan)
-    {
-        //
+            //apakah pendanaan sudah melewati loan amount
+            if($loan_funded > $loan->loan_amount){
+                return redirect()->back()->with('fail','Pinjaman sudah sepenuhnya di danai');
+            }
+
+            $updateLoanFunded = Loan::where('id',decrypt($loan_id))->update([
+                'loan_funded' => $loan_funded,
+                'status' => 'funded'
+            ]);
+
+            //insert transaction first
+            $createBalTrans = LenderBalanceTransaction::create([
+                'trans_type' => 'funding',
+                'user_id' => $user_id,
+                'lender_id' => $lender->id,
+                'amount' => $request->fund_amount,
+                'ref_no' => $loan->loan_no,
+                'status' => 'pending'
+            ]);
+            
+            $currentDate = Carbon::now()->format('Ymd');
+            $updatenoTrans = LenderBalanceTransaction::where('id',$createBalTrans->id)->update([
+                'trans_no' => 'FU/'.$currentDate. "/" .$createBalTrans->id,
+            ]);
+
+            DB::commit();
+            return redirect()->back()->with('success','Sukses Pendanaan');
+        } catch (\Throwable $th) {
+            dd($th);
+            DB::rollback();
+            return redirect()->back()->with(['fail' => 'Gagal Pendanaan']);
+        }
     }
 }

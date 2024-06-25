@@ -47,6 +47,7 @@ Route::post('/borrower/loan/confirm-submit/{id}', [BorrowerController::class, 'c
 Route::get('/borrower/loan/history/{id}', [BorrowerController::class, 'historyLoan']);
 Route::patch('/borrower/loan/approved/{id}', [BorrowerController::class, 'approvedLoan']);
 Route::patch('/borrower/loan/rejected/{id}', [BorrowerController::class, 'rejectedLoan']);
+Route::patch('/borrower/loan/disburst/{id}', [BorrowerController::class, 'disburstLoan']);
 
 //Lender
 Route::get('/lender/regist', [LenderController::class, 'indexRegist']);
@@ -62,6 +63,7 @@ Route::patch('/lender/balance/rejected/{id}', [LenderBalanceTransactionControlle
 
 //Loan
 Route::get('/loan/', [LoanController::class, 'index']);
+Route::post('/loan/funded/{loan_id}', [LoanController::class, 'loanFunded']);
 
 //AJAX
 Route::get('/loan-product-details/{id}', [LoanProductController::class, 'getProduct'])->name('getProduct');

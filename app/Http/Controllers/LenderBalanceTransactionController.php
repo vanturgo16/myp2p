@@ -6,6 +6,7 @@ use App\Models\Lender;
 use App\Models\LenderBalance;
 use App\Models\LenderBalanceTransaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class LenderBalanceTransactionController extends Controller
@@ -37,11 +38,16 @@ class LenderBalanceTransactionController extends Controller
 
         DB::beginTransaction();
         try {
-            $createTopup = LenderBalanceTransaction::create([
+            $createCI = LenderBalanceTransaction::create([
                 'trans_type' => 'cash in',
                 'user_id' => $user_id,
                 'lender_id' => $lender_id,
                 'amount' => $topup_amount
+            ]);
+            
+            $currentDate = Carbon::now()->format('Ymd');
+            $updatenoTrans = LenderBalanceTransaction::where('id',$createCI->id)->update([
+                'trans_no' => 'CI/'.$currentDate. "/" .$createCI->id,
             ]);
         
             DB::commit();
@@ -67,11 +73,16 @@ class LenderBalanceTransactionController extends Controller
 
         DB::beginTransaction();
         try {
-            $createTopup = LenderBalanceTransaction::create([
+            $createCO = LenderBalanceTransaction::create([
                 'trans_type' => 'cash out',
                 'user_id' => $user_id,
                 'lender_id' => $lender_id,
                 'amount' => $topup_amount
+            ]);
+
+            $currentDate = Carbon::now()->format('Ymd');
+            $updatenoTrans = LenderBalanceTransaction::where('id',$createCO->id)->update([
+                'trans_no' => 'CO/'.$currentDate. "/" .$createCO->id,
             ]);
 
             $balance = LenderBalance::where('lender_id', $lender_id)->first()->balance;
