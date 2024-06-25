@@ -73,6 +73,7 @@
                                                       <option value="Kendaraan">Kendaraan</option>
                                                       <option value="Renovasi Rumah">Renovasi Rumah</option>
                                                       <option value="Rumah Sakit">Rumah Sakit</option>
+                                                      <option value="Modal Usaha">Modal Usaha</option>
                                                     </select>
                                                 </div>
                                             </div>
